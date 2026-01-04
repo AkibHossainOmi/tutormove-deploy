@@ -107,7 +107,7 @@ const Navbar = () => {
           {/* Logo */}
           <Link to="/">
             <img 
-              src="TutorMove-Logo-Homepage.png" 
+              src="TutorMove-logo-Homepage.png" 
               alt="TutorMove" 
               className="h-8 sm:h-10" // adjust size as needed
             />
