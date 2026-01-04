@@ -19,6 +19,9 @@ RUN pip install -r requirements.txt
 # Copy backend code
 COPY . .
 
+# Ensure static and media folders exist
+RUN mkdir -p /app/static /app/media
+
 # Collect static files
 RUN python manage.py collectstatic --noinput
 
