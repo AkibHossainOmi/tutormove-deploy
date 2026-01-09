@@ -74,14 +74,27 @@ ROOT_URLCONF = "backend.urls"
 # Channels
 ASGI_APPLICATION = "backend.asgi.application"
 
+def is_valid_domain(host):
+    return (
+        "." in host           # must contain a dot
+        and not host.startswith("127.")
+        and not host.startswith("0.0.0.0")
+        and not host.startswith("localhost")
+        and not host.replace(".", "").isdigit()  # skip pure IPs
+    )
+
+DOMAIN_HOSTS = [h.strip() for h in ALLOWED_HOSTS if is_valid_domain(h)]
+
 # CORS
 CORS_ALLOW_ALL_ORIGINS = False
-CORS_ALLOWED_ORIGINS = [
-    os.getenv("FRONTEND_SITE_URL", "http://localhost:3000"),
-    "http://localhost:3000",
-    "http://127.0.0.1:3000",
-]
+CORS_ALLOWED_ORIGINS = [f"https://{domain}" for domain in DOMAIN_HOSTS]
+if DEBUG:
+    CORS_ALLOWED_ORIGINS += [f"http://{domain}" for domain in DOMAIN_HOSTS]
 CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = [f"https://{domain}" for domain in DOMAIN_HOSTS]
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS += [f"http://{domain}" for domain in DOMAIN_HOSTS]
 
 # Authentication backends
 AUTHENTICATION_BACKENDS = [
