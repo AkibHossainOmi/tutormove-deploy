@@ -28,10 +28,7 @@ if not SECRET_KEY:
 
 ALLOWED_HOSTS = [
     h.strip()
-    for h in os.getenv(
-        "DJANGO_ALLOWED_HOSTS",
-        "localhost,127.0.0.1"
-    ).split(",")
+    for h in os.getenv("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").split(",")
     if h.strip()
 ]
 
@@ -93,7 +90,26 @@ WSGI_APPLICATION = "backend.wsgi.application"
 ASGI_APPLICATION = "backend.asgi.application"
 
 # ------------------------------------------------------------------------------
-# CORS & CSRF (ENV BASED)
+# Templates (REQUIRED for Django Admin)
+# ------------------------------------------------------------------------------
+TEMPLATES = [
+    {
+        "BACKEND": "django.template.backends.django.DjangoTemplates",
+        "DIRS": [],
+        "APP_DIRS": True,
+        "OPTIONS": {
+            "context_processors": [
+                "django.template.context_processors.debug",
+                "django.template.context_processors.request",
+                "django.contrib.auth.context_processors.auth",
+                "django.contrib.messages.context_processors.messages",
+            ],
+        },
+    },
+]
+
+# ------------------------------------------------------------------------------
+# CORS & CSRF
 # ------------------------------------------------------------------------------
 CORS_ALLOW_ALL_ORIGINS = False
 CORS_ALLOW_CREDENTIALS = True
