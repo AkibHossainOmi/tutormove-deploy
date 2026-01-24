@@ -160,17 +160,27 @@ class VerifyOTPView(views.APIView):
 
         # OTP correct
         if purpose == "register":
+            print("✅ CACHED USER DATA:", cached.get("user_data"))
+        
             serializer = RegisterSerializer(data=cached.get("user_data"))
-            if serializer.is_valid():
-                with transaction.atomic():
-                    user = serializer.save()
-                    print("✅ USER CREATED:", user.id, user.email)
-                    Credit.objects.get_or_create(user=user, defaults={"balance": 5})
-                delete_otp(email, purpose)
-                return Response({"detail": "Registration complete"}, status=status.HTTP_201_CREATED)
-
-        delete_otp(email, purpose)
-        return Response({"detail": f"OTP verified for {purpose}"}, status=status.HTTP_200_OK)
+        
+            if not serializer.is_valid():
+                print("❌ SERIALIZER ERRORS:", serializer.errors)
+                return Response(
+                    {
+                        "error": "Registration failed",
+                        "details": serializer.errors
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+        
+            with transaction.atomic():
+                user = serializer.save()
+                print("✅ USER CREATED:", user.id, user.email)
+                Credit.objects.get_or_create(user=user, defaults={"balance": 5})
+        
+            delete_otp(email, purpose)
+            return Response({"detail": "Registration complete"}, status=status.HTTP_201_CREATED)
 
 
 class ResetPasswordView(views.APIView):
