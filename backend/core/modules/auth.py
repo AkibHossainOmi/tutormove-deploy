@@ -141,6 +141,7 @@ class VerifyOTPView(views.APIView):
 
         key = f"otp:{purpose}:{email}"
         cached = get_otp(email, purpose=purpose)
+        print("✅ CACHED OTP DATA:", cached)
 
         if not cached:
             return Response({"error": "OTP expired"}, status=status.HTTP_400_BAD_REQUEST)
@@ -163,6 +164,7 @@ class VerifyOTPView(views.APIView):
             if serializer.is_valid():
                 with transaction.atomic():
                     user = serializer.save()
+                    print("✅ USER CREATED:", user.id, user.email)
                     Credit.objects.get_or_create(user=user, defaults={"balance": 5})
                 delete_otp(email, purpose)
                 return Response({"detail": "Registration complete"}, status=status.HTTP_201_CREATED)
