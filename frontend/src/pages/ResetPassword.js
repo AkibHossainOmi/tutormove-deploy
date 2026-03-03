@@ -4,6 +4,25 @@ import axios from 'axios';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 
+const validatePasswordStrength = (password) => {
+  if (password.length < 8) {
+    return "Password must be at least 8 characters long";
+  }
+  if (!/[a-z]/.test(password)) {
+    return "Password must contain at least one lowercase letter";
+  }
+  if (!/[A-Z]/.test(password)) {
+    return "Password must contain at least one uppercase letter";
+  }
+  if (!/[0-9]/.test(password)) {
+    return "Password must contain at least one number";
+  }
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    return "Password must contain at least one special character";
+  }
+  return null;
+};
+
 const ResetPassword = () => {
   const { uid, token } = useParams();
   const [newPassword, setNewPassword] = useState('');
@@ -13,6 +32,14 @@ const ResetPassword = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMsg(null);
+
+    // Validate password strength
+    const passwordError = validatePasswordStrength(newPassword);
+    if (passwordError) {
+      setMsg(passwordError);
+      return;
+    }
+
     try {
       await axios.post(`${process.env.REACT_APP_API_URL}/api/auth/password-reset-confirm/`, {
         uid,

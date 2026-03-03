@@ -18,20 +18,7 @@ const TutorList = () => {
   // Filter states
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedSubject, setSelectedSubject] = useState("");
-  const [selectedLevel, setSelectedLevel] = useState("");
-  const [priceRange, setPriceRange] = useState("");
-  const [sortBy, setSortBy] = useState("popular");
-
-  // Filter options
-  const subjects = ["Math", "Science", "English", "History", "Programming", "Languages"];
-  const levels = ["Elementary", "Middle School", "High School", "College", "Professional"];
-  const priceRanges = [
-    { label: "Under $20", value: "0-20" },
-    { label: "$20 - $50", value: "20-50" },
-    { label: "$50 - $100", value: "50-100" },
-    { label: "Over $100", value: "100+" }
-  ];
+  const [sortBy, setSortBy] = useState("all");
 
   // Debounce searchInput => searchQuery
   useEffect(() => {
@@ -75,95 +62,51 @@ const TutorList = () => {
     // currently we keep server fetch independent and apply client-side filters
   }, []);
 
-  // Apply filters + sorting (client-side)
+  // Apply filters (client-side)
   useEffect(() => {
     const byTextMatch = (tutor, q) => {
       if (!q) return true;
       const lower = q.toLowerCase();
       const name = (tutor.username || tutor.name || "").toLowerCase();
       const bio = (tutor.bio || tutor.description || "").toLowerCase();
+      const location = (tutor.location || "").toLowerCase();
       const subjString = (Array.isArray(tutor.subjects) ? tutor.subjects.join(" ") : tutor.subject || "").toLowerCase();
-      return name.includes(lower) || bio.includes(lower) || subjString.includes(lower);
+      return name.includes(lower) || bio.includes(lower) || subjString.includes(lower) || location.includes(lower);
     };
 
-    const bySubject = (tutor, subject) => {
-      if (!subject) return true;
-      const subj = subject.toLowerCase();
-      if (Array.isArray(tutor.subjects)) {
-        return tutor.subjects.some(s => (s || "").toLowerCase() === subj);
-      }
-      return (tutor.subject || "").toLowerCase() === subj;
-    };
+    const byTutorType = (tutor, type) => {
+      if (!type || type === "all") return true;
+      // Check if tutor has gigs
+      if (!tutor.gigs || tutor.gigs.length === 0) return false;
 
-    const byLevel = (tutor, level) => {
-      if (!level) return true;
-      const lev = level.toLowerCase();
-      if (Array.isArray(tutor.levels)) {
-        return tutor.levels.some(l => (l || "").toLowerCase() === lev);
-      }
-      return (tutor.level || "").toLowerCase() === lev;
-    };
+      // Check gig modes to determine if online or home tutor
+      const hasOnline = tutor.gigs.some(gig =>
+        gig.mode && (gig.mode.includes("Online") || gig.mode.includes("online"))
+      );
+      const hasHome = tutor.gigs.some(gig =>
+        gig.mode && (gig.mode.includes("At My Place") || gig.mode.includes("Travel to Tutor") ||
+        gig.mode.includes("home") || gig.mode.includes("in-person"))
+      );
 
-    const byPriceRange = (tutor, rangeVal) => {
-      if (!rangeVal) return true;
-      const price = parseFloat(tutor.hourly_rate ?? tutor.price ?? tutor.rate ?? 0) || 0;
-      if (rangeVal.endsWith("+")) {
-        const min = parseFloat(rangeVal.replace("+", ""));
-        return price >= min;
-      }
-      const parts = rangeVal.split("-");
-      if (parts.length === 2) {
-        const min = parseFloat(parts[0]) || 0;
-        const max = parseFloat(parts[1]) || Infinity;
-        return price >= min && price <= max;
-      }
+      if (type === "online") return hasOnline;
+      if (type === "home") return hasHome;
       return true;
     };
 
     let result = tutors.slice();
 
-    // Apply each filter
+    // Apply filters
     result = result.filter(t => byTextMatch(t, searchQuery));
-    result = result.filter(t => bySubject(t, selectedSubject));
-    result = result.filter(t => byLevel(t, selectedLevel));
-    result = result.filter(t => byPriceRange(t, priceRange));
-
-    // Sorting
-    const safeNumber = (v) => (typeof v === "number" ? v : parseFloat(v) || 0);
-    switch (sortBy) {
-      case "rating":
-        result.sort((a, b) => safeNumber(b.rating) - safeNumber(a.rating));
-        break;
-      case "newest":
-        result.sort((a, b) => new Date(b.created_at || b.date_joined || 0) - new Date(a.created_at || a.date_joined || 0));
-        break;
-      case "price-low":
-        result.sort((a, b) => safeNumber(a.hourly_rate ?? a.price ?? a.rate) - safeNumber(b.hourly_rate ?? b.price ?? b.rate));
-        break;
-      case "price-high":
-        result.sort((a, b) => safeNumber(b.hourly_rate ?? b.price ?? b.rate) - safeNumber(a.hourly_rate ?? a.price ?? a.rate));
-        break;
-      case "popular":
-      default:
-        result.sort((a, b) => (b.students_count || 0) - (a.students_count || 0));
-        break;
-    }
+    result = result.filter(t => byTutorType(t, sortBy));
 
     setFilteredTutors(result);
-  }, [tutors, searchQuery, selectedSubject, selectedLevel, priceRange, sortBy]);
+  }, [tutors, searchQuery, sortBy]);
 
   const handleResetFilters = () => {
     setSearchInput("");
     setSearchQuery("");
-    setSelectedSubject("");
-    setSelectedLevel("");
-    setPriceRange("");
-    setSortBy("popular");
+    setSortBy("all");
   };
-
-  const activeFiltersCount = useMemo(() => {
-    return [searchQuery, selectedSubject, selectedLevel, priceRange].filter(Boolean).length;
-  }, [searchQuery, selectedSubject, selectedLevel, priceRange]);
 
   return (
     <>
@@ -202,7 +145,7 @@ const TutorList = () => {
                   type="text"
                   value={searchInput}
                   onChange={(e) => setSearchInput(e.target.value)}
-                  placeholder="Search by subject, name, or keyword..."
+                  placeholder="Search by subject, name or location..."
                   className="w-full pl-12 pr-4 py-4 rounded-xl bg-white text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-white/50 shadow-xl"
                 />
               </div>
@@ -216,60 +159,13 @@ const TutorList = () => {
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex items-center gap-3 flex-wrap">
               <select
-                value={selectedSubject}
-                onChange={(e) => setSelectedSubject(e.target.value)}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">All Subjects</option>
-                {subjects.map(subject => (
-                  <option key={subject} value={subject}>{subject}</option>
-                ))}
-              </select>
-
-              <select
-                value={selectedLevel}
-                onChange={(e) => setSelectedLevel(e.target.value)}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">All Levels</option>
-                {levels.map(level => (
-                  <option key={level} value={level}>{level}</option>
-                ))}
-              </select>
-
-              <select
-                value={priceRange}
-                onChange={(e) => setPriceRange(e.target.value)}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="">All Prices</option>
-                {priceRanges.map(range => (
-                  <option key={range.value} value={range.value}>{range.label}</option>
-                ))}
-              </select>
-
-              {activeFiltersCount > 0 && (
-                <button
-                  onClick={handleResetFilters}
-                  className="px-4 py-2 text-sm text-indigo-600 hover:text-indigo-700 font-medium"
-                >
-                  Reset ({activeFiltersCount})
-                </button>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600 hidden sm:inline">Sort:</span>
-              <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="px-3 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
               >
-                <option value="popular">Most Popular</option>
-                <option value="rating">Highest Rated</option>
-                <option value="newest">Newest</option>
-                <option value="price-low">Price: Low to High</option>
-                <option value="price-high">Price: High to Low</option>
+                <option value="all">All tutors</option>
+                <option value="online">Online tutors</option>
+                <option value="home">Home Tutor</option>
               </select>
             </div>
           </div>

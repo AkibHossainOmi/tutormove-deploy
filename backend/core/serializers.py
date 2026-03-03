@@ -97,6 +97,33 @@ class RegisterSerializer(serializers.ModelSerializer):
             'referred_by_username',
         ]
 
+    def validate_password(self, value):
+        """
+        Validate password strength:
+        - At least 8 characters
+        - Contains mixed-case letters
+        - Contains numbers
+        - Contains symbols
+        """
+        import re
+
+        if len(value) < 8:
+            raise serializers.ValidationError("Password must be at least 8 characters long")
+
+        if not re.search(r'[a-z]', value):
+            raise serializers.ValidationError("Password must contain at least one lowercase letter")
+
+        if not re.search(r'[A-Z]', value):
+            raise serializers.ValidationError("Password must contain at least one uppercase letter")
+
+        if not re.search(r'[0-9]', value):
+            raise serializers.ValidationError("Password must contain at least one number")
+
+        if not re.search(r'[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]', value):
+            raise serializers.ValidationError("Password must contain at least one special character")
+
+        return value
+
     def validate(self, attrs):
         user_type = attrs.get("user_type")
         phone_number = attrs.get("phone_number")

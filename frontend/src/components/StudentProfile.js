@@ -1,5 +1,5 @@
 import React from 'react';
-import { FaMapMarkerAlt, FaPhoneAlt } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaPhoneAlt, FaGraduationCap, FaBriefcase } from 'react-icons/fa';
 
 const StudentProfile = ({
   userData,
@@ -39,6 +39,34 @@ const StudentProfile = ({
               userData.location || 'Not provided'
             ),
             icon: <FaMapMarkerAlt className="text-gray-500" />,
+          },
+          {
+            label: 'Education',
+            value: isEditing ? (
+              <input
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                value={editData.education}
+                onChange={(e) => handleEditChange('education', e.target.value)}
+                placeholder="e.g., Bachelor's in Computer Science"
+              />
+            ) : (
+              userData.education || 'Not provided'
+            ),
+            icon: <FaGraduationCap className="text-gray-500" />,
+          },
+          {
+            label: 'Experience',
+            value: isEditing ? (
+              <input
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
+                value={editData.experience}
+                onChange={(e) => handleEditChange('experience', e.target.value)}
+                placeholder="e.g., 2 years as a student mentor"
+              />
+            ) : (
+              userData.experience || 'Not provided'
+            ),
+            icon: <FaBriefcase className="text-gray-500" />,
           },
         ].map(({ label, value, icon }) => (
           <div key={label}>

@@ -6,7 +6,6 @@ const GigPostForm = ({ onClose, onGigCreated }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [message, setMessage] = useState('');
-  const [phone, setPhone] = useState('');
   const [education, setEducation] = useState('');
   const [experience, setExperience] = useState('');
   const [feeDetails, setFeeDetails] = useState('');
@@ -73,7 +72,6 @@ const GigPostForm = ({ onClose, onGigCreated }) => {
         title,
         description,
         message,
-        phone,
         education,
         experience,
         fee_details: feeDetails,
@@ -96,7 +94,7 @@ const GigPostForm = ({ onClose, onGigCreated }) => {
   };
 
   const isTitleValid = title.trim().length > 0;
-  const isDescriptionValid = description.trim().length >= 20;
+  const isDescriptionValid = description.trim().length >= 50 && description.trim().length <= 5000;
   const isFeeDetailsValid = feeDetails.trim().length > 0;
   const isSubjectValid = subject.trim().length > 0;
   const isFormValid = isTitleValid && isDescriptionValid && isFeeDetailsValid && isSubjectValid;
@@ -169,6 +167,9 @@ const GigPostForm = ({ onClose, onGigCreated }) => {
 
           {/* Description */}
           <div>
+            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-2">
+              Please don't share any contact details (phone, email, website etc) here
+            </p>
             <label htmlFor="gigDescription" className="block text-sm font-medium text-gray-700 mb-1">
               Description <span className="text-red-500">*</span>
             </label>
@@ -184,14 +185,15 @@ const GigPostForm = ({ onClose, onGigCreated }) => {
               }`}
               placeholder="Describe your teaching style, experience, qualifications, etc."
               required
+              maxLength="5000"
             />
             <div className="flex justify-between mt-1">
               {touchedFields.description && !isDescriptionValid ? (
-                <p className="text-sm text-red-600">Description should be at least 20 characters</p>
+                <p className="text-sm text-red-600">Description should be between 50 and 5000 characters</p>
               ) : (
-                <p className="text-xs text-gray-500">Minimum 20 characters</p>
+                <p className="text-xs text-gray-500">50-5000 characters</p>
               )}
-              <p className="text-xs text-gray-500">{description.length}/500</p>
+              <p className="text-xs text-gray-500">{description.length}/5000</p>
             </div>
           </div>
 
@@ -206,21 +208,6 @@ const GigPostForm = ({ onClose, onGigCreated }) => {
               onChange={(e) => setMessage(e.target.value)}
               className="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition min-h-[80px] resize-y border-gray-300 focus:ring-blue-200 focus:border-blue-500"
               placeholder="Any additional message for students"
-            />
-          </div>
-
-          {/* Phone */}
-          <div>
-            <label htmlFor="gigPhone" className="block text-sm font-medium text-gray-700 mb-1">
-              Phone (optional)
-            </label>
-            <input
-              type="text"
-              id="gigPhone"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition border-gray-300 focus:ring-blue-200 focus:border-blue-500"
-              placeholder="Your phone number"
             />
           </div>
 
@@ -242,15 +229,17 @@ const GigPostForm = ({ onClose, onGigCreated }) => {
           {/* Experience */}
           <div>
             <label htmlFor="gigExperience" className="block text-sm font-medium text-gray-700 mb-1">
-              Experience (optional)
+              Experience (years) (optional)
             </label>
             <input
-              type="text"
+              type="number"
               id="gigExperience"
               value={experience}
               onChange={(e) => setExperience(e.target.value)}
               className="w-full px-4 py-2.5 border rounded-lg focus:outline-none focus:ring-2 transition border-gray-300 focus:ring-blue-200 focus:border-blue-500"
-              placeholder="Your experience details"
+              placeholder="Years of experience"
+              min="0"
+              step="1"
             />
           </div>
 

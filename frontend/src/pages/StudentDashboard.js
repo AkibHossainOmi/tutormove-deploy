@@ -580,7 +580,7 @@ const StudentDashboard = () => {
                 onClick={handlePostJobClick}
                 className="mt-4 inline-flex items-center rounded-xl bg-gradient-to-br from-blue-600 to-blue-700 text-white px-4 py-2 text-sm font-medium hover:bg-black"
               >
-                Create Job
+                Post Job
               </button>
             </div>
           ) : (

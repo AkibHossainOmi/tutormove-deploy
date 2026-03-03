@@ -9,6 +9,25 @@ const FIELD_BASE =
 
 const LABEL_BASE = "block text-sm font-medium text-gray-700 mb-1";
 
+const validatePasswordStrength = (password) => {
+  if (password.length < 8) {
+    return "Password must be at least 8 characters long";
+  }
+  if (!/[a-z]/.test(password)) {
+    return "Password must contain at least one lowercase letter";
+  }
+  if (!/[A-Z]/.test(password)) {
+    return "Password must contain at least one uppercase letter";
+  }
+  if (!/[0-9]/.test(password)) {
+    return "Password must contain at least one number";
+  }
+  if (!/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password)) {
+    return "Password must contain at least one special character";
+  }
+  return null;
+};
+
 const Signup = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -64,6 +83,14 @@ const Signup = () => {
       setError("Passwords do not match");
       return;
     }
+
+    // Validate password strength
+    const passwordError = validatePasswordStrength(form.password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
+
     if (resendTimeout > 0) return; // throttle resend
 
     setLoading(true);

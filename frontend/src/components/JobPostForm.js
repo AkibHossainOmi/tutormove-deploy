@@ -1,7 +1,42 @@
 import { useState } from "react";
 import { jobAPI } from "../utils/apiService";
 
-const countries = ["Bangladesh", "India", "USA", "UK", "Canada"];
+const countries = [
+  "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
+  "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bhutan", "Bolivia",
+  "Bosnia and Herzegovina", "Botswana", "Brazil", "Brunei", "Bulgaria", "Burkina Faso", "Burundi", "Cambodia", "Cameroon", "Canada",
+  "Cape Verde", "Central African Republic", "Chad", "Chile", "China", "Colombia", "Comoros", "Congo", "Costa Rica", "Croatia",
+  "Cuba", "Cyprus", "Czech Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador",
+  "Equatorial Guinea", "Eritrea", "Estonia", "Eswatini", "Ethiopia", "Fiji", "Finland", "France", "Gabon", "Gambia",
+  "Georgia", "Germany", "Ghana", "Greece", "Grenada", "Guatemala", "Guinea", "Guinea-Bissau", "Guyana", "Haiti",
+  "Honduras", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy",
+  "Jamaica", "Japan", "Jordan", "Kazakhstan", "Kenya", "Kiribati", "Kuwait", "Kyrgyzstan", "Laos", "Latvia",
+  "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Madagascar", "Malawi", "Malaysia",
+  "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco",
+  "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar", "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand",
+  "Nicaragua", "Niger", "Nigeria", "North Korea", "North Macedonia", "Norway", "Oman", "Pakistan", "Palau", "Palestine",
+  "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Poland", "Portugal", "Qatar", "Romania", "Russia",
+  "Rwanda", "Saint Kitts and Nevis", "Saint Lucia", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Senegal", "Serbia",
+  "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Korea", "South Sudan",
+  "Spain", "Sri Lanka", "Sudan", "Suriname", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania",
+  "Thailand", "Timor-Leste", "Togo", "Tonga", "Trinidad and Tobago", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda",
+  "Ukraine", "United Arab Emirates", "United Kingdom", "United States", "Uruguay", "Uzbekistan", "Vanuatu", "Vatican City", "Venezuela", "Vietnam",
+  "Yemen", "Zambia", "Zimbabwe"
+];
+
+const top100Languages = [
+  "English", "Mandarin Chinese", "Hindi", "Spanish", "French", "Arabic", "Bengali", "Russian", "Portuguese", "Urdu",
+  "Indonesian", "German", "Japanese", "Swahili", "Marathi", "Telugu", "Turkish", "Tamil", "Vietnamese", "Korean",
+  "Italian", "Persian", "Polish", "Ukrainian", "Malayalam", "Kannada", "Gujarati", "Thai", "Dutch", "Punjabi",
+  "Filipino", "Romanian", "Hausa", "Amharic", "Oriya", "Burmese", "Bhojpuri", "Sundanese", "Maithili", "Azerbaijani",
+  "Hungarian", "Yoruba", "Igbo", "Czech", "Greek", "Swedish", "Nepali", "Sinhala", "Khmer", "Shona",
+  "Uzbek", "Hebrew", "Zulu", "Malagasy", "Kinyarwanda", "Cebuano", "Afrikaans", "Danish", "Finnish", "Slovak",
+  "Norwegian", "Tigrinya", "Lithuanian", "Croatian", "Belarusian", "Somali", "Albanian", "Serbian", "Lao", "Slovenian",
+  "Macedonian", "Kazakh", "Armenian", "Latvian", "Estonian", "Kirundi", "Kurdish", "Georgian", "Mongolian", "Turkmen",
+  "Tajik", "Bosnian", "Kyrgyz", "Icelandic", "Maltese", "Luxembourgish", "Welsh", "Irish", "Basque", "Catalan",
+  "Galician", "Scots Gaelic", "Breton", "Corsican", "Faroese", "Greenlandic", "Romansh", "Manx", "Cornish", "Hawaiian"
+];
+
 const educationLevels = ["Primary", "Secondary", "Higher Secondary", "Bachelor", "Masters", "PhD"];
 const budgetTypes = ["Fixed", "Per Hour", "Per Month", "Per Week", "Per Year"];
 
@@ -350,13 +385,16 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
           <div>
             <label className="block text-sm mb-1">Languages</label>
             <div className="flex gap-2">
-              <input
-                type="text"
+              <select
                 value={languageInput}
                 onChange={(e) => setLanguageInput(e.target.value)}
-                placeholder="Add a language"
                 className="flex-1 border border-gray-300 rounded-lg p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-              />
+              >
+                <option value="">Select a language</option>
+                {top100Languages.map((lang) => (
+                  <option key={lang} value={lang}>{lang}</option>
+                ))}
+              </select>
               <button
                 type="button"
                 onClick={() => handleAddItem(languageInput, "languages", setLanguageInput)}

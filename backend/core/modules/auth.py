@@ -107,6 +107,16 @@ class SendOTPView(views.APIView):
         if not email:
             return Response({"error": "Email is required"}, status=status.HTTP_400_BAD_REQUEST)
 
+        # Validate email domain for registration
+        if purpose == "register":
+            allowed_domains = ['gmail.com', 'outlook.com', 'yahoo.com', 'hotmail.com', 'icloud.com']
+            email_domain = email.split('@')[-1].lower() if '@' in email else ''
+            if email_domain not in allowed_domains:
+                return Response(
+                    {"error": "Email must be from gmail, outlook, yahoo, hotmail, or icloud"},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
         # Check email existence
         if purpose == "register":
             if UserModel.objects.filter(email=email).exists():
@@ -188,6 +198,33 @@ class ResetPasswordView(views.APIView):
 
     MAX_ATTEMPTS = 3  # maximum OTP attempts
 
+    def validate_password_strength(self, password):
+        """
+        Validate password strength:
+        - At least 8 characters
+        - Contains mixed-case letters
+        - Contains numbers
+        - Contains symbols
+        """
+        import re
+
+        if len(password) < 8:
+            return "Password must be at least 8 characters long"
+
+        if not re.search(r'[a-z]', password):
+            return "Password must contain at least one lowercase letter"
+
+        if not re.search(r'[A-Z]', password):
+            return "Password must contain at least one uppercase letter"
+
+        if not re.search(r'[0-9]', password):
+            return "Password must contain at least one number"
+
+        if not re.search(r'[!@#$%^&*()_+\-=\[\]{};\':"\\|,.<>\/?]', password):
+            return "Password must contain at least one special character"
+
+        return None
+
     def post(self, request):
         email = request.data.get("email")
         otp = request.data.get("otp")
@@ -195,6 +232,14 @@ class ResetPasswordView(views.APIView):
         if not all([email, otp, new_password]):
             return Response(
                 {"error": "Email, OTP, and new password are required"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # Validate password strength
+        password_error = self.validate_password_strength(new_password)
+        if password_error:
+            return Response(
+                {"error": password_error},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 

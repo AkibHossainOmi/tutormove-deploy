@@ -121,20 +121,6 @@ export default function TutorProfilePage() {
               </Card>
             </div>
 
-            <Card title="Subjects">
-              {profile.subjects?.length > 0 ? (
-                <ul className="flex flex-wrap gap-2">
-                  {profile.subjects.map((subj, i) => (
-                    <li key={i} className="bg-indigo-100 text-indigo-800 px-3 py-1 rounded-full text-sm font-medium">
-                      {subj}
-                    </li>
-                  ))}
-                </ul>
-              ) : (
-                <p className="text-gray-500">No subjects listed.</p>
-              )}
-            </Card>
-
             <Card title="Gigs">
               {profile.gigs?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -158,13 +144,23 @@ export default function TutorProfilePage() {
           {/* Right Side - Contact + Message */}
           <aside className="space-y-6">
             <Card title="Contact Info">
-              {profile.email || profile.phone_number ? (
-                <ul className="space-y-2 text-gray-700">
-                  <li><span className="font-medium">Email:</span> {profile.email || "Hidden"}</li>
-                  <li><span className="font-medium">WhatsApp:</span> {profile.phone_number || "Hidden"}</li>
-                </ul>
+              {profile.unlocked ? (
+                profile.email || profile.phone_number ? (
+                  <ul className="space-y-2 text-gray-700">
+                    <li><span className="font-medium">Email:</span> {profile.email || "Not provided"}</li>
+                    <li><span className="font-medium">WhatsApp:</span> {profile.phone_number || "Not provided"}</li>
+                  </ul>
+                ) : (
+                  <p className="text-gray-500 italic">Contact not available</p>
+                )
               ) : (
-                <p className="text-gray-500 italic">Contact not available</p>
+                <div className="text-center py-4">
+                  <svg className="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                  <p className="text-gray-600 font-medium">Unlock to view contact</p>
+                  <p className="text-sm text-gray-500 mt-1">Contact details are hidden until unlocked</p>
+                </div>
               )}
             </Card>
 

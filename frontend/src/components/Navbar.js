@@ -106,10 +106,10 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-14 sm:h-14">
           {/* Logo */}
           <Link to="/">
-            <img 
-              src="TutorMove-logo-Homepage.png" 
-              alt="TutorMove" 
-              className="h-8 sm:h-10" // adjust size as needed
+            <img
+              src="/TutorMove-logo-Homepage.png"
+              alt="TutorMove"
+              className="h-8 sm:h-10"
             />
           </Link>
 
