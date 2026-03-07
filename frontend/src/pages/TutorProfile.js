@@ -153,10 +153,10 @@ export default function TutorProfilePage() {
                   {profile.gigs.map((gig) => (
                     <div
                       key={gig.id}
-                      className="p-4 border rounded-xl bg-white shadow hover:shadow-lg transition transform hover:-translate-y-1 cursor-pointer"
+                      className="p-4 border rounded-xl bg-white shadow hover:shadow-lg transition transform hover:-translate-y-1 cursor-pointer overflow-hidden"
                     >
-                      <h4 className="font-semibold text-indigo-700">{gig.title}</h4>
-                      <p className="text-gray-700">{gig.description}</p>
+                      <h4 className="font-semibold text-indigo-700 truncate">{gig.title}</h4>
+                      <p className="text-gray-700 line-clamp-3 break-words">{gig.description}</p>
                       <p className="text-sm text-gray-500 mt-2">Subject: {gig.subject}</p>
                     </div>
                   ))}
