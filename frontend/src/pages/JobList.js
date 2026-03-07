@@ -13,7 +13,7 @@ import {
 import { jobAPI } from "../utils/apiService";
 
 const JobList = () => {
-  const [jobs, setJobs] = useState([]);
+  const [allJobs, setAllJobs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedType, setSelectedType] = useState("all");
@@ -23,36 +23,14 @@ const JobList = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Fetch all jobs once
   useEffect(() => {
     const fetchJobs = async () => {
       try {
         const res = await jobAPI.getJobs();
-        let allJobs = res.data || [];
-
-        // Sort by date (newest first)
-        allJobs.sort(
-          (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        );
-
-        const params = new URLSearchParams(location.search);
-        const type = params.get("type");
-
-        if (type === "online") {
-          allJobs = allJobs.filter((job) => job.mode?.includes("Online"));
-          setSelectedType("online");
-        } else if (type === "offline") {
-          allJobs = allJobs.filter((job) => job.mode?.includes("Offline"));
-          setSelectedType("offline");
-        } else if (type === "assignment") {
-          allJobs = allJobs.filter(
-            (job) => job.service_type?.toLowerCase() === "assignment help"
-          );
-          setSelectedType("assignment");
-        } else {
-          setSelectedType("all");
-        }
-
-        setJobs(allJobs);
+        let jobs = res.data || [];
+        jobs.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+        setAllJobs(jobs);
       } catch (err) {
         console.error("Error fetching jobs:", err);
       } finally {
@@ -60,29 +38,48 @@ const JobList = () => {
       }
     };
     fetchJobs();
+  }, []);
+
+  // Read filter from URL on mount and when URL changes
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const type = params.get("type");
+    if (type === "online" || type === "offline" || type === "assignment") {
+      setSelectedType(type);
+    } else {
+      setSelectedType("all");
+    }
+    setCurrentPage(1);
   }, [location.search]);
 
   const handleFilterChange = (type) => {
-    setSelectedType(type);
-    setCurrentPage(1);
     navigate(type === "all" ? "/jobs" : `/jobs?type=${type}`);
   };
 
-  const filteredJobs = jobs.filter((job) => {
-    if (!searchQuery) return true;
-    const query = searchQuery.toLowerCase();
-    const textFields = [
-      job.description,
-      job.location,
-      job.mode,
-      job.service_type,
-      Array.isArray(job.subject_details)
-        ? job.subject_details.join(" ")
-        : job.subject_details,
-    ];
-    return textFields.some((field) =>
-      String(field || "").toLowerCase().includes(query)
-    );
+  // Apply type filter + search filter
+  const filteredJobs = allJobs.filter((job) => {
+    // Type filter
+    if (selectedType === "online" && !job.mode?.includes("Online")) return false;
+    if (selectedType === "offline" && !job.mode?.includes("Offline")) return false;
+    if (selectedType === "assignment" && job.service_type?.toLowerCase() !== "assignment help") return false;
+
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      const textFields = [
+        job.description,
+        job.location,
+        Array.isArray(job.mode) ? job.mode.join(" ") : job.mode,
+        job.service_type,
+        Array.isArray(job.subject_details)
+          ? job.subject_details.join(" ")
+          : job.subject_details,
+      ];
+      return textFields.some((field) =>
+        String(field || "").toLowerCase().includes(query)
+      );
+    }
+    return true;
   });
 
   // Pagination logic
@@ -282,7 +279,7 @@ const JobCard = ({ job }) => (
             text={job.subject_details?.join(", ") || "Not specified"}
           />
           <InfoItem icon={<FiMapPin />} text={job.location || "Remote"} />
-          <InfoItem icon={<FiUser />} text={job.mode || "Not specified"} />
+          <InfoItem icon={<FiUser />} text={Array.isArray(job.mode) ? job.mode.join(", ") : (job.mode || "Not specified")} />
           <InfoItem
             icon={<FiClock />}
             text={`Posted ${new Date(
