@@ -61,8 +61,24 @@ class ContactUnlockSerializer(serializers.ModelSerializer):
         validated_data['unlocker'] = user
         return super().create(validated_data)
 
+class GigSerializer(serializers.ModelSerializer):
+    subject_active = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Gig
+        fields = '__all__'
+        read_only_fields = ['tutor', 'used_credits']
+
+    def get_subject_active(self, obj):
+        try:
+            subject = Subject.objects.get(name__iexact=obj.subject)
+            return subject.is_active
+        except Subject.DoesNotExist:
+            return False
+
 class UserSerializer(serializers.ModelSerializer):
-    unlocked = serializers.SerializerMethodField()  # <-- Add this
+    unlocked = serializers.SerializerMethodField()
+    gigs = GigSerializer(many=True, read_only=True)
 
     class Meta:
         model = User
@@ -206,24 +222,6 @@ class SubjectSerializer(serializers.ModelSerializer):
         model = Subject
         fields = ['id', 'name', 'aliases', 'is_active']
 
-
-# === GIG SERIALIZER ===
-
-
-class GigSerializer(serializers.ModelSerializer):
-    subject_active = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Gig
-        fields = '__all__'
-        read_only_fields = ['tutor', 'used_credits']
-
-    def get_subject_active(self, obj):
-        try:
-            subject = Subject.objects.get(name__iexact=obj.subject)
-            return subject.is_active
-        except Subject.DoesNotExist:
-            return False
 
 # === JOB UNLOCK SERIALIZER ===
 class JobUnlockSerializer(serializers.ModelSerializer):
