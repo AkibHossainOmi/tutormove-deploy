@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { FaMapMarkerAlt, FaPhoneAlt, FaGraduationCap, FaBriefcase } from "react-icons/fa";
+import { FaMapMarkerAlt, FaGraduationCap, FaBriefcase } from "react-icons/fa";
 import { studentAPI } from "../utils/apiService";
 
 export default function StudentProfilePage() {
@@ -49,11 +49,6 @@ export default function StudentProfilePage() {
 
             <div className="space-y-5">
               {[
-                {
-                  label: "WhatsApp Number",
-                  value: student.phone_number || "Not provided",
-                  icon: <FaPhoneAlt className="text-gray-500" />,
-                },
                 {
                   label: "Location",
                   value: student.location || "Not provided",
