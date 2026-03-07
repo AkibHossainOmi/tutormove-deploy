@@ -18,7 +18,6 @@ const TutorList = () => {
   // Filter states
   const [searchInput, setSearchInput] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [sortBy, setSortBy] = useState("all");
 
   // Debounce searchInput => searchQuery
   useEffect(() => {
@@ -74,38 +73,15 @@ const TutorList = () => {
       return name.includes(lower) || bio.includes(lower) || subjString.includes(lower) || location.includes(lower);
     };
 
-    const byTutorType = (tutor, type) => {
-      if (!type || type === "all") return true;
-      // Check if tutor has gigs
-      if (!tutor.gigs || tutor.gigs.length === 0) return false;
-
-      // Check gig modes to determine if online or home tutor
-      const hasOnline = tutor.gigs.some(gig =>
-        gig.mode && (gig.mode.includes("Online") || gig.mode.includes("online"))
-      );
-      const hasHome = tutor.gigs.some(gig =>
-        gig.mode && (gig.mode.includes("At My Place") || gig.mode.includes("Travel to Tutor") ||
-        gig.mode.includes("home") || gig.mode.includes("in-person"))
-      );
-
-      if (type === "online") return hasOnline;
-      if (type === "home") return hasHome;
-      return true;
-    };
-
     let result = tutors.slice();
-
-    // Apply filters
     result = result.filter(t => byTextMatch(t, searchQuery));
-    result = result.filter(t => byTutorType(t, sortBy));
 
     setFilteredTutors(result);
-  }, [tutors, searchQuery, sortBy]);
+  }, [tutors, searchQuery]);
 
   const handleResetFilters = () => {
     setSearchInput("");
     setSearchQuery("");
-    setSortBy("all");
   };
 
   return (
@@ -154,23 +130,6 @@ const TutorList = () => {
         </div>
       </div>
 
-      <div className="bg-white border-b sticky top-0 z-20 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <div className="flex items-center gap-3 flex-wrap">
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              >
-                <option value="all">All tutors</option>
-                <option value="online">Online tutors</option>
-                <option value="home">Home Tutor</option>
-              </select>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div className="bg-gray-50 min-h-screen py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
