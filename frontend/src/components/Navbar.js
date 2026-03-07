@@ -116,22 +116,7 @@ const Navbar = () => {
           {/* Desktop Navigation */}
           <div className="hidden lg:flex items-center space-x-5">
             {(userType === "student" || !isAuthenticated) && (
-              <div className="relative" ref={tutorsDropdownRef}>
-                <button
-                  onClick={() => setIsTutorsDropdownOpen((prev) => !prev)}
-                  className="group flex items-center text-gray-700 hover:text-indigo-600 font-medium text-base"
-                >
-                  Find Tutors
-                  <ChevronDownIcon />
-                </button>
-                {isTutorsDropdownOpen && (
-                  <div className="absolute left-0 mt-2 w-52 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-20">
-                    <DropdownLink to="/tutors" text="All Tutors" onClick={() => setIsTutorsDropdownOpen(false)} />
-                    <DropdownLink to="/tutors?type=online" text="Online Tutors" onClick={() => setIsTutorsDropdownOpen(false)} />
-                    <DropdownLink to="/tutors?type=home" text="Home Tutors" onClick={() => setIsTutorsDropdownOpen(false)} />
-                  </div>
-                )}
-              </div>
+              <NavLink to="/tutors" text="Find Tutors" />
             )}
 
             {(userType === "tutor" || !isAuthenticated) && (
