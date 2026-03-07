@@ -11,6 +11,8 @@ const TutorCard = ({ tutor, featured = false }) => {
   const [currentUserType, setCurrentUserType] = useState('');
   const [error, setError] = useState('');
 
+  const isLoggedIn = !!localStorage.getItem('token');
+
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem('user'));
     setCurrentUserType(user?.user_type || '');
@@ -125,7 +127,7 @@ const TutorCard = ({ tutor, featured = false }) => {
                     <p className="text-sm text-gray-500">Contact not available</p>
                   )}
                 </div>
-              ) : (
+              ) : currentUserType === 'student' ? (
                 <div className="flex items-center gap-3 flex-wrap">
                   <button
                     onClick={handleUnlockContact}
@@ -140,6 +142,11 @@ const TutorCard = ({ tutor, featured = false }) => {
                   </button>
                   <span className="text-xs text-gray-500">View contact</span>
                 </div>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  {isLoggedIn ? 'Contact hidden' : <a href="/login" className="text-blue-600 hover:text-blue-700 font-medium">Log in</a>}
+                  {!isLoggedIn && ' to view contact'}
+                </p>
               )}
             </div>
           </div>
@@ -190,18 +197,12 @@ const TutorCard = ({ tutor, featured = false }) => {
       </div>
 
       <div className="bg-gray-50 px-5 py-3 border-t border-gray-200">
-        {currentUserType === 'student' ? (
-          <Link
-            to={`/tutors/${tutor.id}`}
-            className="w-full flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-white bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
-          >
-            View Full Profile →
-          </Link>
-        ) : (
-          <div className="text-center text-sm text-gray-500">
-            Log in as student to view full profile
-          </div>
-        )}
+        <Link
+          to={`/tutors/${tutor.id}`}
+          className="w-full flex items-center justify-center px-4 py-2 rounded-md text-sm font-medium text-white bg-gradient-to-br from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800"
+        >
+          View Full Profile →
+        </Link>
       </div>
 
       <BuyCreditsModal
