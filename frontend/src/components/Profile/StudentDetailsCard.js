@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FaUserGraduate, FaBriefcase, FaPhoneAlt, FaMapMarkerAlt } from "react-icons/fa";
+import { FaUserGraduate, FaBriefcase, FaMapMarkerAlt } from "react-icons/fa";
 import axios from "axios";
 
 const StudentDetailsCard = ({ profile }) => {
@@ -8,13 +8,6 @@ const StudentDetailsCard = ({ profile }) => {
     isEditing,
     editData,
     handleEditChange,
-    handleSendOTP,
-    handleVerifyOTP,
-    otpSent,
-    otp,
-    setOtp,
-    otpTimer,
-    formatTimer,
   } = profile;
 
   const [locationSuggestions, setLocationSuggestions] = useState([]);
@@ -61,55 +54,6 @@ const StudentDetailsCard = ({ profile }) => {
         />
       ) : (
         userData.experience || "Not provided"
-      ),
-    },
-    {
-      label: "WhatsApp Number",
-      icon: <FaPhoneAlt className="text-gray-500" />,
-      value: isEditing ? (
-        <input
-          className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500"
-          value={editData.phone_number}
-          onChange={(e) => handleEditChange("phone_number", e.target.value)}
-        />
-      ) : (
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2">
-            <span>{userData.phone_number || "Not provided"}</span>
-            {userData.phone_verified && (
-              <span className="text-green-600 flex items-center gap-1">Verified</span>
-            )}
-          </div>
-          {!userData.phone_verified && !otpSent && userData.phone_number && (
-            <button
-              className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-              onClick={handleSendOTP}
-            >
-              Verify
-            </button>
-          )}
-          {otpSent && (
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                className="border rounded-lg px-2 py-1 w-24"
-                placeholder="Enter OTP"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-              />
-              <button
-                className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                onClick={handleVerifyOTP}
-                disabled={otpTimer === 0}
-              >
-                Verify
-              </button>
-              {otpTimer > 0 && (
-                <span className="text-sm text-gray-500">{formatTimer(otpTimer)}</span>
-              )}
-            </div>
-          )}
-        </div>
       ),
     },
     {
