@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, Link } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { tutorAPI, creditAPI, contactUnlockAPI } from "../utils/apiService";
@@ -151,14 +151,15 @@ export default function TutorProfilePage() {
               {profile.gigs?.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {profile.gigs.map((gig) => (
-                    <div
+                    <Link
                       key={gig.id}
-                      className="p-4 border rounded-xl bg-white shadow hover:shadow-lg transition transform hover:-translate-y-1 cursor-pointer overflow-hidden"
+                      to={`/tutor/gig/${gig.id}`}
+                      className="block p-4 border rounded-xl bg-white shadow hover:shadow-lg transition transform hover:-translate-y-1 cursor-pointer overflow-hidden"
                     >
                       <h4 className="font-semibold text-indigo-700 truncate">{gig.title}</h4>
                       <p className="text-gray-700 line-clamp-3 break-words">{gig.description}</p>
                       <p className="text-sm text-gray-500 mt-2">Subject: {gig.subject}</p>
-                    </div>
+                    </Link>
                   ))}
                 </div>
               ) : (

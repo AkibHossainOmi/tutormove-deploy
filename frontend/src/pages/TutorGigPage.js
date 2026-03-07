@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { gigApi } from '../utils/apiService';
 import Navbar from '../components/Navbar';
@@ -30,13 +30,16 @@ const TutorGigPage = () => {
     phone: ''
   });
 
+  const user = JSON.parse(localStorage.getItem('user'));
+  const isOwner = user && gig && user.id === gig.tutor;
+
   const fetchRank = useCallback(async (gigId) => {
     setRankLoading(true);
     try {
       const { data } = await gigApi.getGigRank(gigId);
       setRankInfo(data);
     } catch {
-      toast.error('Failed to fetch current rank');
+      // silently fail for non-owners
     } finally {
       setRankLoading(false);
     }
@@ -47,19 +50,24 @@ const TutorGigPage = () => {
     try {
       const { data } = await gigApi.getGig(id);
       setGig(data);
-      fetchRank(data.id);
-      setPredictedRank(null);
     } catch {
       toast.error('Failed to load gig details');
       setGig(null);
     } finally {
       setLoading(false);
     }
-  }, [id, fetchRank]);
+  }, [id]);
 
   useEffect(() => {
     fetchGig();
   }, [fetchGig]);
+
+  // Fetch rank only for owner
+  useEffect(() => {
+    if (gig && user && user.id === gig.tutor) {
+      fetchRank(gig.id);
+    }
+  }, [gig, user, fetchRank]);
 
   useEffect(() => {
     if (gig) {
@@ -163,6 +171,71 @@ const TutorGigPage = () => {
     </div>
   );
 
+  // ===== PUBLIC / STUDENT VIEW =====
+  if (!isOwner) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex flex-col">
+        <Navbar />
+        <main className="flex-grow max-w-4xl mx-auto w-full p-4 mt-20 mb-10">
+          <div className="bg-white rounded-xl shadow-xl overflow-hidden border border-gray-100">
+
+            {/* Header */}
+            <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-blue-50">
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                {gig.title || 'Untitled Gig'}
+              </h1>
+              <p className="text-indigo-600 font-medium mt-1">{gig.subject}</p>
+            </div>
+
+            {/* Description */}
+            <div className="p-6 border-b border-gray-100">
+              <h2 className="text-lg font-semibold text-gray-800 mb-3">Description</h2>
+              <p className="text-gray-700 whitespace-pre-line leading-relaxed break-words">
+                {gig.description || 'No description provided.'}
+              </p>
+            </div>
+
+            {/* Details */}
+            <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+              {[
+                { label: 'Subject', value: gig.subject },
+                { label: 'Fee Details', value: gig.fee_details },
+                { label: 'Education', value: gig.education },
+                { label: 'Experience', value: gig.experience },
+              ].map(({ label, value }) => (
+                <div key={label}>
+                  <h3 className="text-sm font-medium text-gray-500 mb-1">{label}</h3>
+                  <p className="text-gray-900">{value || 'N/A'}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Posted date */}
+            <div className="px-6 pb-6">
+              <p className="text-sm text-gray-500">
+                Posted: {gig.created_at ? new Date(gig.created_at).toLocaleDateString() : 'Recently'}
+              </p>
+            </div>
+
+            {/* View Tutor Profile link */}
+            {gig.tutor && (
+              <div className="px-6 pb-6 border-t border-gray-100 pt-4">
+                <Link
+                  to={`/tutors/${gig.tutor}`}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-md transition-all"
+                >
+                  View Tutor Profile
+                </Link>
+              </div>
+            )}
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  // ===== TUTOR OWNER VIEW =====
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navbar />

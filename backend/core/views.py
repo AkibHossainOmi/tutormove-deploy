@@ -643,7 +643,14 @@ class GigViewSet(viewsets.ModelViewSet):
     serializer_class = GigSerializer
     permission_classes = [permissions.IsAuthenticated]
 
+    def get_permissions(self):
+        if self.action == 'retrieve':
+            return [permissions.AllowAny()]
+        return super().get_permissions()
+
     def get_queryset(self):
+        if self.action == 'retrieve':
+            return Gig.objects.all()
         return Gig.objects.filter(tutor=self.request.user)
 
     def perform_create(self, serializer):

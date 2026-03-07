@@ -58,6 +58,7 @@ function App() {
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/tutors" element={<TutorList />} />
           <Route path="/tutors/:tutorId" element={<TutorProfile />} />
+          <Route path="/tutor/gig/:id" element={<TutorGigPage />} />
           <Route path="/jobs" element={<JobList />} />
           {/* Fallback for unmatched public routes, redirects to Home */}
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -74,7 +75,6 @@ function App() {
             <Route path="/buy-premium" element={<BuyPremiumPage />} />
 
             {/* Gigs and Job Listings */}
-            <Route path="/tutor/gig/:id" element={<TutorGigPage />} />
             <Route path="/gigs/:id" element={<GigDetails />} />
             <Route path="/jobs/:id" element={<JobDetail />} />
 
