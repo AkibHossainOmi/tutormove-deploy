@@ -7,6 +7,7 @@ import { useProfile } from '../components/Profile/UseProfile';
 import ProfileHeader from '../components/Profile/ProfileHeader';
 import BasicInfoCard from '../components/Profile/BasicInfoCard';
 import TutorDetailsCard from '../components/Profile/TutorDetailsCard';
+import StudentDetailsCard from '../components/Profile/StudentDetailsCard';
 import BioCard from '../components/Profile/BioCard';
 import AccountActionsCard from '../components/Profile/AccountActionsCard';
 import StatusMessage from '../components/Profile/StatusMessage';
@@ -49,6 +50,7 @@ const Profile = () => {
           <div className="lg:col-span-2 space-y-6">
             <BasicInfoCard profile={profile} />
             {profile.userType === 'tutor' && <TutorDetailsCard profile={profile} />}
+            {profile.userType === 'student' && <StudentDetailsCard profile={profile} />}
           </div>
           <div className="lg:col-span-1 space-y-6">
             <BioCard profile={profile} />
