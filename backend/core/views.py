@@ -651,7 +651,16 @@ class GigViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         if self.action == 'retrieve':
             return Gig.objects.all()
-        return Gig.objects.filter(tutor=self.request.user)
+        if self.request.user.is_authenticated:
+            return Gig.objects.filter(tutor=self.request.user)
+        return Gig.objects.none()
+
+    def retrieve(self, request, *args, **kwargs):
+        gig = Gig.objects.filter(pk=kwargs.get('pk')).first()
+        if not gig:
+            return Response({'detail': 'Gig not found.'}, status=404)
+        serializer = self.get_serializer(gig)
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         user = self.request.user
