@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { tutorAPI, creditAPI } from "../utils/apiService";
+import { tutorAPI, creditAPI, contactUnlockAPI } from "../utils/apiService";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function TutorProfilePage() {
@@ -12,6 +12,10 @@ export default function TutorProfilePage() {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  // Unlock State
+  const [unlocking, setUnlocking] = useState(false);
+  const [unlockError, setUnlockError] = useState("");
+
   // Gift Coin Modal State
   const [showGiftModal, setShowGiftModal] = useState(false);
   const [giftAmount, setGiftAmount] = useState("");
@@ -20,8 +24,11 @@ export default function TutorProfilePage() {
   const [giftSuccess, setGiftSuccess] = useState("");
   const [userBalance, setUserBalance] = useState(0);
 
-  // Fetch user's current balance
+  const isLoggedIn = !!localStorage.getItem('token');
+
+  // Fetch user's current balance (only if logged in)
   useEffect(() => {
+    if (!isLoggedIn) return;
     const fetchBalance = async () => {
       try {
         const res = await creditAPI.getCreditBalance();
@@ -31,7 +38,7 @@ export default function TutorProfilePage() {
       }
     };
     fetchBalance();
-  }, []);
+  }, [isLoggedIn]);
 
   const handleGiftCoins = async () => {
     const amount = parseInt(giftAmount);
@@ -64,6 +71,24 @@ export default function TutorProfilePage() {
     }
   };
 
+  const handleUnlockContact = async () => {
+    setUnlocking(true);
+    setUnlockError("");
+    try {
+      await contactUnlockAPI.unlockContact(tutorId);
+      // Refetch profile to get updated data with contact info
+      const profileData = await tutorAPI.getTutorProfile(tutorId);
+      setProfile(profileData.data);
+      // Update balance
+      const res = await creditAPI.getCreditBalance();
+      setUserBalance(res.data?.balance || 0);
+    } catch (err) {
+      setUnlockError(err.response?.data?.detail || "Failed to unlock contact");
+    } finally {
+      setUnlocking(false);
+    }
+  };
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -83,7 +108,8 @@ export default function TutorProfilePage() {
   if (error) return <div className="p-6 text-center text-red-600 font-semibold">{error}</div>;
   if (!profile) return null;
 
-  const isStudent = JSON.parse(localStorage.getItem("user"))?.user_type === "student";
+  const user = isLoggedIn ? JSON.parse(localStorage.getItem("user")) : null;
+  const isStudent = user?.user_type === "student";
 
   return (
     <>
@@ -158,8 +184,40 @@ export default function TutorProfilePage() {
                   <svg className="w-12 h-12 mx-auto text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
-                  <p className="text-gray-600 font-medium">Unlock to view contact</p>
-                  <p className="text-sm text-gray-500 mt-1">Contact details are hidden until unlocked</p>
+                  <p className="text-gray-600 font-medium">Contact details are hidden</p>
+                  {isLoggedIn ? (
+                    <>
+                      <button
+                        onClick={handleUnlockContact}
+                        disabled={unlocking}
+                        className="mt-3 inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium shadow-md transition-all disabled:bg-gray-300 disabled:cursor-not-allowed"
+                      >
+                        {unlocking ? (
+                          <span className="flex items-center gap-2">
+                            <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                            </svg>
+                            Unlocking...
+                          </span>
+                        ) : (
+                          <>
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z" />
+                            </svg>
+                            Unlock (1 point)
+                          </>
+                        )}
+                      </button>
+                      {unlockError && (
+                        <p className="text-sm text-red-600 mt-2">{unlockError}</p>
+                      )}
+                    </>
+                  ) : (
+                    <p className="text-sm text-gray-500 mt-1">
+                      <a href="/login" className="text-indigo-600 hover:text-indigo-700 font-medium">Log in</a> to unlock contact details
+                    </p>
+                  )}
                 </div>
               )}
             </Card>

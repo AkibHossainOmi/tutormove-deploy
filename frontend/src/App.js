@@ -57,6 +57,7 @@ function App() {
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />
           <Route path="/terms" element={<TermsOfService />} />
           <Route path="/tutors" element={<TutorList />} />
+          <Route path="/tutors/:tutorId" element={<TutorProfile />} />
           <Route path="/jobs" element={<JobList />} />
           {/* Fallback for unmatched public routes, redirects to Home */}
           <Route path="*" element={<Navigate to="/" replace />} />
@@ -68,7 +69,6 @@ function App() {
 
             {/* User Profile and Tutor Listings */}
             <Route path="/profile" element={<Profile />} />
-            <Route path="/tutors/:tutorId" element={<TutorProfile />} />
             <Route path="/students/:studentId" element={<StudentProfilePage />} />
             <Route path="/buy-points" element={<BuyCreditsAndPremiumPage />} />
             <Route path="/buy-premium" element={<BuyPremiumPage />} />
