@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import LoadingSpinner from "../components/LoadingSpinner";
-import { FaMapMarkerAlt, FaPhoneAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaPhoneAlt, FaGraduationCap, FaBriefcase } from "react-icons/fa";
 import { studentAPI } from "../utils/apiService";
 
 export default function StudentProfilePage() {
@@ -58,6 +58,16 @@ export default function StudentProfilePage() {
                   label: "Location",
                   value: student.location || "Not provided",
                   icon: <FaMapMarkerAlt className="text-gray-500" />,
+                },
+                {
+                  label: "Education",
+                  value: student.education || "Not provided",
+                  icon: <FaGraduationCap className="text-gray-500" />,
+                },
+                {
+                  label: "Experience",
+                  value: student.experience || "Not provided",
+                  icon: <FaBriefcase className="text-gray-500" />,
                 },
                 {
                   label: "Bio",
