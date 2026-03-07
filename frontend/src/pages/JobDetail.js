@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import BuyCreditsModal from '../components/BuyCreditsModal';
@@ -262,10 +262,10 @@ const JobDetail = () => {
               </div>
               
               <div className="flex flex-wrap items-center gap-3 text-sm text-gray-600">
-                <span className="flex items-center gap-1.5">
-                  <FiUser className="text-gray-400" /> 
+                <Link to={`/students/${job.student.id}`} className="flex items-center gap-1.5 text-indigo-600 hover:text-indigo-700 font-medium">
+                  <FiUser className="text-gray-400" />
                   {job.student.username}
-                </span>
+                </Link>
                 <span className="text-gray-300">•</span>
                 <span className="flex items-center gap-1.5">
                   <FiMapPin className="text-gray-400" /> 
