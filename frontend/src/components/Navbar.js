@@ -188,9 +188,11 @@ const Navbar = () => {
                     Request a Tutor
                   </button>
                   {isRequestDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-30">
-                      <DropdownLink to="/login" text="Login" onClick={() => setIsRequestDropdownOpen(false)} />
-                      <DropdownLink to="/post-requirement" text="Request a Tutor" onClick={() => setIsRequestDropdownOpen(false)} />
+                    <div className="absolute right-0 pt-2 w-48 z-30">
+                      <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2">
+                        <DropdownLink to="/login" text="Login" onClick={() => setIsRequestDropdownOpen(false)} />
+                        <DropdownLink to="/post-requirement" text="Request a Tutor" onClick={() => setIsRequestDropdownOpen(false)} />
+                      </div>
                     </div>
                   )}
                 </div>
