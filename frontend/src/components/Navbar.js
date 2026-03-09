@@ -47,6 +47,7 @@ const Navbar = () => {
   const [isTutorsDropdownOpen, setIsTutorsDropdownOpen] = useState(false);
   const [isJobsDropdownOpen, setIsJobsDropdownOpen] = useState(false);
   const [isAccountDropdownOpen, setIsAccountDropdownOpen] = useState(false);
+  const [isRequestDropdownOpen, setIsRequestDropdownOpen] = useState(false);
 
   const navigate = useNavigate();
   const isAuthenticated = useAuth();
@@ -61,6 +62,7 @@ const Navbar = () => {
   const tutorsDropdownRef = useRef(null);
   const jobsDropdownRef = useRef(null);
   const accountDropdownRef = useRef(null);
+  const requestDropdownRef = useRef(null);
   const mobileMenuRef = useRef(null);
   const mobileMenuButtonRef = useRef(null);
 
@@ -74,6 +76,9 @@ const Navbar = () => {
       }
       if (accountDropdownRef.current && !accountDropdownRef.current.contains(e.target)) {
         setIsAccountDropdownOpen(false);
+      }
+      if (requestDropdownRef.current && !requestDropdownRef.current.contains(e.target)) {
+        setIsRequestDropdownOpen(false);
       }
       if (
         mobileMenuRef.current &&
@@ -171,20 +176,24 @@ const Navbar = () => {
                   )}
                 </div>
               ) : (
-                <>
+                <div
+                  className="relative"
+                  ref={requestDropdownRef}
+                  onMouseEnter={() => setIsRequestDropdownOpen(true)}
+                  onMouseLeave={() => setIsRequestDropdownOpen(false)}
+                >
                   <button
-                    onClick={handleLogin}
-                    className="px-3 py-1 text-base font-medium border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition"
+                    className="px-4 py-2 text-base font-medium rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow hover:from-indigo-700 hover:to-purple-700 transition"
                   >
-                    Login
+                    Request a Tutor
                   </button>
-                  <button
-                    onClick={handleRequestTutor}
-                    className="px-3 py-1 text-base font-medium rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow hover:from-indigo-700 hover:to-purple-700 transition"
-                  >
-                    Sign Up
-                  </button>
-                </>
+                  {isRequestDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-gray-100 py-2 z-30">
+                      <DropdownLink to="/login" text="Login" onClick={() => setIsRequestDropdownOpen(false)} />
+                      <DropdownLink to="/post-requirement" text="Request a Tutor" onClick={() => setIsRequestDropdownOpen(false)} />
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </div>
@@ -240,18 +249,20 @@ const Navbar = () => {
             </div>
           ) : (
             <div className="pt-4 border-t border-gray-200 space-y-3">
-              <button
-                onClick={handleLogin}
-                className="w-full px-4 py-2 border border-indigo-600 text-indigo-600 rounded-lg text-base font-medium hover:bg-indigo-50 transition"
+              <Link
+                to="/login"
+                onClick={() => setIsMenuOpen(false)}
+                className="block w-full px-4 py-2 border border-indigo-600 text-indigo-600 rounded-lg text-base font-medium hover:bg-indigo-50 transition text-center"
               >
                 Login
-              </button>
-              <button
-                onClick={handleRequestTutor}
-                className="w-full px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-base font-medium shadow hover:from-indigo-700 hover:to-purple-700 transition"
+              </Link>
+              <Link
+                to="/post-requirement"
+                onClick={() => setIsMenuOpen(false)}
+                className="block w-full px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg text-base font-medium shadow hover:from-indigo-700 hover:to-purple-700 transition text-center"
               >
-                Sign Up
-              </button>
+                Request a Tutor
+              </Link>
             </div>
           )}
           <div className="pt-4 border-t border-gray-200">

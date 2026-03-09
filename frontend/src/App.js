@@ -61,6 +61,7 @@ function App() {
           <Route path="/tutor/gig/:id" element={<TutorGigPage />} />
           <Route path="/students/:studentId" element={<StudentProfilePage />} />
           <Route path="/jobs" element={<JobList />} />
+          <Route path="/post-requirement" element={<PostRequirement />} />
           {/* Fallback for unmatched public routes, redirects to Home */}
           <Route path="*" element={<Navigate to="/" replace />} />
 
@@ -99,7 +100,6 @@ function App() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/teacher-guide" element={<TeacherGuide />} />
             <Route path="/student-faq" element={<FAQ />} />
-            <Route path="/post-requirement" element={<PostRequirement />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -1,9 +1,14 @@
 // src/pages/PostRequirement.jsx
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { useAuth } from "../contexts/UseAuth";
 
 export default function PostRequirement() {
+  const navigate = useNavigate();
+  const isAuthenticated = useAuth();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -20,6 +25,10 @@ export default function PostRequirement() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      navigate("/signup");
+      return;
+    }
     console.log("Requirement Submitted:", formData);
     alert("Your requirement has been submitted successfully!");
     setFormData({
