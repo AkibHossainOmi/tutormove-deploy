@@ -176,26 +176,35 @@ const Navbar = () => {
                   )}
                 </div>
               ) : (
-                <div
-                  className="relative"
-                  ref={requestDropdownRef}
-                  onMouseEnter={() => setIsRequestDropdownOpen(true)}
-                  onMouseLeave={() => setIsRequestDropdownOpen(false)}
-                >
-                  <button
+                <>
+                  <div
+                    className="relative"
+                    ref={requestDropdownRef}
+                    onMouseEnter={() => setIsRequestDropdownOpen(true)}
+                    onMouseLeave={() => setIsRequestDropdownOpen(false)}
+                  >
+                    <button
+                      className="px-3 py-1 text-base font-medium border border-indigo-600 text-indigo-600 rounded-lg hover:bg-indigo-50 transition flex items-center"
+                    >
+                      Login / Sign Up
+                      <ChevronDownIcon />
+                    </button>
+                    {isRequestDropdownOpen && (
+                      <div className="absolute right-0 pt-2 w-40 z-30">
+                        <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2">
+                          <DropdownLink to="/login" text="Login" onClick={() => setIsRequestDropdownOpen(false)} />
+                          <DropdownLink to="/signup" text="Sign Up" onClick={() => setIsRequestDropdownOpen(false)} />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  <Link
+                    to="/post-requirement"
                     className="px-4 py-2 text-base font-medium rounded-lg bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow hover:from-indigo-700 hover:to-purple-700 transition"
                   >
                     Request a Tutor
-                  </button>
-                  {isRequestDropdownOpen && (
-                    <div className="absolute right-0 pt-2 w-48 z-30">
-                      <div className="bg-white rounded-xl shadow-lg border border-gray-100 py-2">
-                        <DropdownLink to="/login" text="Login" onClick={() => setIsRequestDropdownOpen(false)} />
-                        <DropdownLink to="/post-requirement" text="Request a Tutor" onClick={() => setIsRequestDropdownOpen(false)} />
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  </Link>
+                </>
               )}
             </div>
           </div>
@@ -257,6 +266,13 @@ const Navbar = () => {
                 className="block w-full px-4 py-2 border border-indigo-600 text-indigo-600 rounded-lg text-base font-medium hover:bg-indigo-50 transition text-center"
               >
                 Login
+              </Link>
+              <Link
+                to="/signup"
+                onClick={() => setIsMenuOpen(false)}
+                className="block w-full px-4 py-2 border border-indigo-600 text-indigo-600 rounded-lg text-base font-medium hover:bg-indigo-50 transition text-center"
+              >
+                Sign Up
               </Link>
               <Link
                 to="/post-requirement"
