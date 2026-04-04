@@ -1,6 +1,35 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
+const formatRelativeTime = (dateStr) => {
+  if (!dateStr) return 'N/A';
+  const date = new Date(dateStr);
+  if (isNaN(date.getTime())) return 'N/A';
+
+  const now = new Date();
+  const diffInSeconds = Math.floor((now - date) / 1000);
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  const diffInMonths = Math.floor(diffInDays / 30);
+  const diffInYears = Math.floor(diffInDays / 365);
+
+  if (diffInMinutes < 1) return 'Just now';
+  if (diffInMinutes === 1) return '1 minute ago';
+  if (diffInMinutes < 60) return `${diffInMinutes} minutes ago`;
+  if (diffInHours === 1) return '1 hour ago';
+  if (diffInHours < 24) return `${diffInHours} hours ago`;
+  if (diffInDays === 1) return '1 day ago';
+  if (diffInDays < 7) return `${diffInDays} days ago`;
+  if (diffInWeeks === 1) return '1 week ago';
+  if (diffInWeeks < 4) return `${diffInWeeks} weeks ago`;
+  if (diffInMonths === 1) return '1 month ago';
+  if (diffInMonths < 12) return `${diffInMonths} months ago`;
+  if (diffInYears === 1) return '1 year ago';
+  return `${diffInYears} years ago`;
+};
+
 const GigItemCard = ({ gig }) => {
   const { id, title, education, experience, created_at, subject, subject_active } = gig;
   const navigate = useNavigate();
@@ -39,7 +68,7 @@ const GigItemCard = ({ gig }) => {
         </div>
 
         <div className="text-xs text-gray-500">
-          Posted on {created_at ? new Date(created_at).toLocaleDateString() : 'N/A'}
+          Posted {formatRelativeTime(created_at)}
         </div>
       </div>
 
