@@ -11,6 +11,7 @@ const TutorMapSearch = () => {
 
   const [locationSuggestions, setLocationSuggestions] = useState([]);
   const [subjectSuggestions, setSubjectSuggestions] = useState([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
 
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [tutors, setTutors] = useState([]);
@@ -31,15 +32,26 @@ const TutorMapSearch = () => {
   }, []);
 
   const fetchLocationSuggestions = async (text) => {
-    if (text.length < 3) return;
+    if (text.length < 3) {
+      setLocationSuggestions([]);
+      return;
+    }
     try {
       const res = await axios.get("https://nominatim.openstreetmap.org/search", {
         params: { q: text, format: "json", limit: 5 },
       });
       setLocationSuggestions(res.data);
+      setShowLocationSuggestions(true);
     } catch {
       setLocationSuggestions([]);
     }
+  };
+
+  const handleLocationSelect = (suggestion) => {
+    setQuery(suggestion.display_name);
+    setSelectedLocation(suggestion);
+    setLocationSuggestions([]);
+    setShowLocationSuggestions(false);
   };
 
   const fetchSubjectSuggestions = (text) => {
@@ -129,32 +141,31 @@ const TutorMapSearch = () => {
             <input
               type="text"
               value={query}
-              placeholder="Enter location..."
+              placeholder="Type to search location..."
               onChange={(e) => {
                 setQuery(e.target.value);
+                setSelectedLocation(null); // Clear selection when typing
                 fetchLocationSuggestions(e.target.value);
-                if (!e.target.value.trim()) setSelectedLocation(null);
               }}
-              onFocus={() => fetchLocationSuggestions(query)}
-              onBlur={() => setTimeout(() => setLocationSuggestions([]), 200)}
+              onFocus={() => locationSuggestions.length > 0 && setShowLocationSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
               className="w-full p-3 border-2 border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            {locationSuggestions.length > 0 && (
-              <ul className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-md mt-1 max-h-52 overflow-y-auto z-20">
+            {showLocationSuggestions && locationSuggestions.length > 0 && (
+              <ul className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg mt-1 max-h-52 overflow-y-auto z-50 shadow-lg">
                 {locationSuggestions.map((sugg) => (
                   <li
                     key={sugg.place_id}
-                    onMouseDown={() => {
-                      setSelectedLocation(sugg);
-                      setQuery(sugg.display_name);
-                      setLocationSuggestions([]);
-                    }}
-                    className="px-3 py-2 text-sm hover:bg-blue-50 cursor-pointer"
+                    onMouseDown={() => handleLocationSelect(sugg)}
+                    className="px-4 py-3 text-sm hover:bg-blue-50 cursor-pointer border-b border-gray-100 last:border-b-0"
                   >
                     {sugg.display_name}
                   </li>
                 ))}
               </ul>
+            )}
+            {query && !selectedLocation && (
+              <p className="text-xs text-amber-600 mt-1">Please select a location from the suggestions</p>
             )}
           </div>
 
