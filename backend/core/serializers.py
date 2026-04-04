@@ -83,7 +83,12 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = '__all__'
+        exclude = ['subjects']  # Exclude model field, use SerializerMethodField instead
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        ret['subjects'] = self.get_subjects(instance)
+        return ret
 
     def get_unlocked(self, obj):
         request = self.context.get("request")
