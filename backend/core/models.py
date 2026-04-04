@@ -257,6 +257,7 @@ class Job(models.Model):
 
     location = models.CharField(max_length=255, default='Unknown')
     phone = models.CharField(max_length=30, default='N/A')
+    email = models.CharField(max_length=100, default='N/A')
     description = models.TextField(default='')
 
     subjects = models.ManyToManyField('Subject', related_name='jobs')

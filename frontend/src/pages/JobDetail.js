@@ -3,11 +3,11 @@ import { useParams, Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import BuyCreditsModal from '../components/BuyCreditsModal';
-import { 
-  FiBriefcase, FiMapPin, FiBook, FiUser, FiCalendar, 
+import {
+  FiBriefcase, FiMapPin, FiBook, FiUser, FiCalendar,
   FiAlertCircle, FiDollarSign, FiClock, FiGlobe, FiPhone, FiUsers,
   FiStar, FiCheckCircle, FiLock, FiUnlock, FiX, FiTrendingUp,
-  FiInfo
+  FiInfo, FiMail
 } from 'react-icons/fi';
 import { jobAPI } from '../utils/apiService';
 import JobApplicants from '../components/JobApplicants';
@@ -379,6 +379,19 @@ const JobDetail = () => {
                     <p className="text-xs font-medium text-gray-500 mb-0.5">WhatsApp</p>
                     <p className="text-sm font-medium text-gray-900">
                       {jobUnlocked || !isTutor ? (job.phone || "N/A") : "Unlock to view"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Email with Conditional Access */}
+                <div className="flex items-start gap-3">
+                  <div className="text-gray-600 mt-0.5">
+                    <FiMail size={18} />
+                  </div>
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 mb-0.5">Email</p>
+                    <p className="text-sm font-medium text-gray-900">
+                      {jobUnlocked || !isTutor ? (job.email || "N/A") : "Unlock to view"}
                     </p>
                   </div>
                 </div>

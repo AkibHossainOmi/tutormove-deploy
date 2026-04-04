@@ -191,6 +191,7 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
   const [formData, setFormData] = useState({
     location: "",
     phone: "",
+    email: "",
     description: "",
     subjects: [],
     educationLevel: "",
@@ -318,6 +319,7 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
         student: studentId,
         location: formData.location,
         phone: formData.phone,
+        email: formData.email,
         description: formData.description,
         subjects: formData.subjects, // M2M
         languages: formData.languages,
@@ -430,6 +432,22 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
               value={formData.phone}
               onChange={handleChange}
               placeholder="Enter your WhatsApp number"
+              className="w-full border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 rounded-lg p-3 transition"
+              required
+            />
+          </div>
+
+          {/* Email */}
+          <div>
+            <label className="block text-sm mb-1">
+              <RequiredLabel label="Email" />
+            </label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              placeholder="Enter your email address"
               className="w-full border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 rounded-lg p-3 transition"
               required
             />
