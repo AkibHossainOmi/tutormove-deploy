@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Select from "react-select";
 import axios from "axios";
 import { jobAPI } from "../utils/apiService";
@@ -239,6 +239,44 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
     setShowLocationSuggestions(false);
   };
 
+  // Subject autocomplete states
+  const [availableSubjects, setAvailableSubjects] = useState([]);
+  const [subjectSuggestions, setSubjectSuggestions] = useState([]);
+  const [showSubjectSuggestions, setShowSubjectSuggestions] = useState(false);
+
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      try {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/subjects`);
+        setAvailableSubjects(res.data.filter((s) => s.is_active));
+      } catch (err) {
+        console.error("Failed to fetch subjects", err);
+      }
+    };
+    fetchSubjects();
+  }, []);
+
+  const filterSubjectSuggestions = (text) => {
+    if (!text.trim()) {
+      setSubjectSuggestions([]);
+      setShowSubjectSuggestions(false);
+      return;
+    }
+    const filtered = availableSubjects.filter(
+      (s) => s.name.toLowerCase().includes(text.toLowerCase()) &&
+        !formData.subjects.includes(s.name)
+    );
+    setSubjectSuggestions(filtered);
+    setShowSubjectSuggestions(filtered.length > 0);
+  };
+
+  const handleSubjectSelect = (subject) => {
+    setFormData({ ...formData, subjects: [...formData.subjects, subject.name] });
+    setSubjectInput("");
+    setSubjectSuggestions([]);
+    setShowSubjectSuggestions(false);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -417,25 +455,36 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
           </div>
 
           {/* Subjects */}
-          <div>
+          <div className="relative">
             <label className="block text-sm mb-1">
               <RequiredLabel label="Subjects" />
             </label>
-            <div className="flex gap-2">
+            <div className="relative">
               <input
                 type="text"
                 value={subjectInput}
-                onChange={(e) => setSubjectInput(e.target.value)}
-                placeholder="Add a subject"
-                className="flex-1 border border-gray-300 rounded-lg p-2 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+                onChange={(e) => {
+                  setSubjectInput(e.target.value);
+                  filterSubjectSuggestions(e.target.value);
+                }}
+                onFocus={() => filterSubjectSuggestions(subjectInput)}
+                onBlur={() => setTimeout(() => setShowSubjectSuggestions(false), 200)}
+                placeholder="Type to search subjects..."
+                className="w-full border border-gray-300 rounded-lg p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               />
-              <button
-                type="button"
-                onClick={() => handleAddItem(subjectInput, "subjects", setSubjectInput)}
-                className="bg-indigo-600 text-white px-5 py-2 rounded-lg hover:bg-indigo-700 transition"
-              >
-                Add
-              </button>
+              {showSubjectSuggestions && subjectSuggestions.length > 0 && (
+                <ul className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg mt-1 max-h-52 overflow-y-auto z-50 shadow-lg">
+                  {subjectSuggestions.map((subj) => (
+                    <li
+                      key={subj.id}
+                      onMouseDown={() => handleSubjectSelect(subj)}
+                      className="px-4 py-3 text-sm hover:bg-indigo-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                    >
+                      {subj.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </div>
             <div className="flex flex-wrap gap-2 mt-2">
               {formData.subjects.map((subj, i) => (
