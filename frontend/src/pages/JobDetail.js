@@ -407,7 +407,7 @@ const JobDetail = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-blue-600 mt-0.5">•</span>
-                      <span>Price may <strong>decrease to 0 coins</strong> in 36 hours.</span>
+                      <span>Price may <strong>decrease to 0 points</strong> in 36 hours.</span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-blue-600 mt-0.5">•</span>
@@ -415,7 +415,7 @@ const JobDetail = () => {
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-blue-600 mt-0.5">•</span>
-                      <span>Student verified phone number and can be called. Therefore, <strong className="text-red-600">no coins will be refunded</strong> even if student doesn't look at your message.</span>
+                      <span>Student verified phone number and can be called. Therefore, <strong className="text-red-600">no points will be refunded</strong> even if student doesn't look at your message.</span>
                     </li>
                   </ul>
                 </div>
