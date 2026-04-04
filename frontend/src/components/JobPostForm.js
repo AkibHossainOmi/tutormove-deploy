@@ -204,6 +204,9 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
             <label className="block text-sm mb-1">
               <RequiredLabel label="Description" />
             </label>
+            <p className="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-2">
+              Please don't share any contact details (phone, email, website etc) here
+            </p>
             <textarea
               name="description"
               value={formData.description}
