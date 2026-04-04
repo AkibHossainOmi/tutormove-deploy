@@ -31,6 +31,12 @@ class GigAdmin(admin.ModelAdmin):
     search_fields = ('title', 'description', 'education', 'experience')
     ordering = ('-created_at',)
 
+@admin.register(Credit)
+class CreditAdmin(admin.ModelAdmin):
+    list_display = ('user', 'balance', 'auto_renew', 'last_renewed')
+    list_filter = ('auto_renew',)
+    search_fields = ('user__username', 'user__email')
+
 @admin.register(Job)
 class JobAdmin(admin.ModelAdmin):
     list_display = [
