@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Select from "react-select";
 import { jobAPI } from "../utils/apiService";
 
 const countries = [
@@ -40,22 +41,149 @@ const top100Languages = [
 const educationLevels = ["Primary", "Secondary", "Higher Secondary", "Bachelor", "Masters", "PhD"];
 const budgetTypes = ["Fixed", "Per Hour", "Per Month", "Per Week", "Per Year"];
 
-const currencies = [
-  "AFN", "ALL", "DZD", "EUR", "AOA", "XCD", "ARS", "AMD", "AUD", "AZN",
-  "BSD", "BHD", "BDT", "BBD", "BYN", "BZD", "XOF", "BTN", "BOB", "BAM",
-  "BWP", "BRL", "BND", "BGN", "BIF", "CVE", "KHR", "XAF", "CAD", "CLP",
-  "CNY", "COP", "KMF", "CDF", "CRC", "CUP", "CZK", "DKK", "DJF", "DOP",
-  "USD", "EGP", "ERN", "SZL", "ETB", "FJD", "GMD", "GEL", "GHS", "GTQ",
-  "GNF", "GYD", "HTG", "HNL", "HUF", "ISK", "INR", "IDR", "IRR", "IQD",
-  "ILS", "JMD", "JPY", "JOD", "KZT", "KES", "KWD", "KGS", "LAK", "LBP",
-  "LSL", "LRD", "LYD", "CHF", "MGA", "MWK", "MYR", "MVR", "MRU", "MUR",
-  "MXN", "MDL", "MNT", "MAD", "MZN", "MMK", "NAD", "NPR", "NZD", "NIO",
-  "NGN", "KPW", "MKD", "NOK", "OMR", "PKR", "PAB", "PGK", "PYG", "PEN",
-  "PHP", "PLN", "QAR", "RON", "RUB", "RWF", "WST", "STN", "SAR", "RSD",
-  "SCR", "SLE", "SGD", "SBD", "SOS", "ZAR", "SSP", "LKR", "SDG", "SRD",
-  "SEK", "SYP", "TJS", "TZS", "THB", "TOP", "TTD", "TND", "TRY", "TMT",
-  "UGX", "UAH", "AED", "GBP", "UYU", "UZS", "VUV", "VES", "VND", "YER",
-  "ZMW", "ZWG"
+const currencyOptions = [
+  { value: "BDT", label: "BDT - Bangladesh" },
+  { value: "USD", label: "USD - United States" },
+  { value: "EUR", label: "EUR - Europe" },
+  { value: "GBP", label: "GBP - United Kingdom" },
+  { value: "INR", label: "INR - India" },
+  { value: "AED", label: "AED - UAE" },
+  { value: "SAR", label: "SAR - Saudi Arabia" },
+  { value: "CAD", label: "CAD - Canada" },
+  { value: "AUD", label: "AUD - Australia" },
+  { value: "JPY", label: "JPY - Japan" },
+  { value: "CNY", label: "CNY - China" },
+  { value: "AFN", label: "AFN - Afghanistan" },
+  { value: "ALL", label: "ALL - Albania" },
+  { value: "DZD", label: "DZD - Algeria" },
+  { value: "AOA", label: "AOA - Angola" },
+  { value: "XCD", label: "XCD - East Caribbean" },
+  { value: "ARS", label: "ARS - Argentina" },
+  { value: "AMD", label: "AMD - Armenia" },
+  { value: "AZN", label: "AZN - Azerbaijan" },
+  { value: "BSD", label: "BSD - Bahamas" },
+  { value: "BHD", label: "BHD - Bahrain" },
+  { value: "BBD", label: "BBD - Barbados" },
+  { value: "BYN", label: "BYN - Belarus" },
+  { value: "BZD", label: "BZD - Belize" },
+  { value: "XOF", label: "XOF - West Africa" },
+  { value: "BTN", label: "BTN - Bhutan" },
+  { value: "BOB", label: "BOB - Bolivia" },
+  { value: "BAM", label: "BAM - Bosnia" },
+  { value: "BWP", label: "BWP - Botswana" },
+  { value: "BRL", label: "BRL - Brazil" },
+  { value: "BND", label: "BND - Brunei" },
+  { value: "BGN", label: "BGN - Bulgaria" },
+  { value: "BIF", label: "BIF - Burundi" },
+  { value: "CVE", label: "CVE - Cabo Verde" },
+  { value: "KHR", label: "KHR - Cambodia" },
+  { value: "XAF", label: "XAF - Central Africa" },
+  { value: "CLP", label: "CLP - Chile" },
+  { value: "COP", label: "COP - Colombia" },
+  { value: "KMF", label: "KMF - Comoros" },
+  { value: "CDF", label: "CDF - Congo" },
+  { value: "CRC", label: "CRC - Costa Rica" },
+  { value: "CUP", label: "CUP - Cuba" },
+  { value: "CZK", label: "CZK - Czechia" },
+  { value: "DKK", label: "DKK - Denmark" },
+  { value: "DJF", label: "DJF - Djibouti" },
+  { value: "DOP", label: "DOP - Dominican Rep" },
+  { value: "EGP", label: "EGP - Egypt" },
+  { value: "ERN", label: "ERN - Eritrea" },
+  { value: "SZL", label: "SZL - Eswatini" },
+  { value: "ETB", label: "ETB - Ethiopia" },
+  { value: "FJD", label: "FJD - Fiji" },
+  { value: "GMD", label: "GMD - Gambia" },
+  { value: "GEL", label: "GEL - Georgia" },
+  { value: "GHS", label: "GHS - Ghana" },
+  { value: "GTQ", label: "GTQ - Guatemala" },
+  { value: "GNF", label: "GNF - Guinea" },
+  { value: "GYD", label: "GYD - Guyana" },
+  { value: "HTG", label: "HTG - Haiti" },
+  { value: "HNL", label: "HNL - Honduras" },
+  { value: "HUF", label: "HUF - Hungary" },
+  { value: "ISK", label: "ISK - Iceland" },
+  { value: "IDR", label: "IDR - Indonesia" },
+  { value: "IRR", label: "IRR - Iran" },
+  { value: "IQD", label: "IQD - Iraq" },
+  { value: "ILS", label: "ILS - Israel" },
+  { value: "JMD", label: "JMD - Jamaica" },
+  { value: "JOD", label: "JOD - Jordan" },
+  { value: "KZT", label: "KZT - Kazakhstan" },
+  { value: "KES", label: "KES - Kenya" },
+  { value: "KWD", label: "KWD - Kuwait" },
+  { value: "KGS", label: "KGS - Kyrgyzstan" },
+  { value: "LAK", label: "LAK - Laos" },
+  { value: "LBP", label: "LBP - Lebanon" },
+  { value: "LSL", label: "LSL - Lesotho" },
+  { value: "LRD", label: "LRD - Liberia" },
+  { value: "LYD", label: "LYD - Libya" },
+  { value: "CHF", label: "CHF - Switzerland" },
+  { value: "MGA", label: "MGA - Madagascar" },
+  { value: "MWK", label: "MWK - Malawi" },
+  { value: "MYR", label: "MYR - Malaysia" },
+  { value: "MVR", label: "MVR - Maldives" },
+  { value: "MRU", label: "MRU - Mauritania" },
+  { value: "MUR", label: "MUR - Mauritius" },
+  { value: "MXN", label: "MXN - Mexico" },
+  { value: "MDL", label: "MDL - Moldova" },
+  { value: "MNT", label: "MNT - Mongolia" },
+  { value: "MAD", label: "MAD - Morocco" },
+  { value: "MZN", label: "MZN - Mozambique" },
+  { value: "MMK", label: "MMK - Myanmar" },
+  { value: "NAD", label: "NAD - Namibia" },
+  { value: "NPR", label: "NPR - Nepal" },
+  { value: "NZD", label: "NZD - New Zealand" },
+  { value: "NIO", label: "NIO - Nicaragua" },
+  { value: "NGN", label: "NGN - Nigeria" },
+  { value: "KPW", label: "KPW - North Korea" },
+  { value: "MKD", label: "MKD - North Macedonia" },
+  { value: "NOK", label: "NOK - Norway" },
+  { value: "OMR", label: "OMR - Oman" },
+  { value: "PKR", label: "PKR - Pakistan" },
+  { value: "PAB", label: "PAB - Panama" },
+  { value: "PGK", label: "PGK - Papua New Guinea" },
+  { value: "PYG", label: "PYG - Paraguay" },
+  { value: "PEN", label: "PEN - Peru" },
+  { value: "PHP", label: "PHP - Philippines" },
+  { value: "PLN", label: "PLN - Poland" },
+  { value: "QAR", label: "QAR - Qatar" },
+  { value: "RON", label: "RON - Romania" },
+  { value: "RUB", label: "RUB - Russia" },
+  { value: "RWF", label: "RWF - Rwanda" },
+  { value: "WST", label: "WST - Samoa" },
+  { value: "STN", label: "STN - Sao Tome" },
+  { value: "RSD", label: "RSD - Serbia" },
+  { value: "SCR", label: "SCR - Seychelles" },
+  { value: "SLE", label: "SLE - Sierra Leone" },
+  { value: "SGD", label: "SGD - Singapore" },
+  { value: "SBD", label: "SBD - Solomon Islands" },
+  { value: "SOS", label: "SOS - Somalia" },
+  { value: "ZAR", label: "ZAR - South Africa" },
+  { value: "SSP", label: "SSP - South Sudan" },
+  { value: "LKR", label: "LKR - Sri Lanka" },
+  { value: "SDG", label: "SDG - Sudan" },
+  { value: "SRD", label: "SRD - Suriname" },
+  { value: "SEK", label: "SEK - Sweden" },
+  { value: "SYP", label: "SYP - Syria" },
+  { value: "TJS", label: "TJS - Tajikistan" },
+  { value: "TZS", label: "TZS - Tanzania" },
+  { value: "THB", label: "THB - Thailand" },
+  { value: "TOP", label: "TOP - Tonga" },
+  { value: "TTD", label: "TTD - Trinidad" },
+  { value: "TND", label: "TND - Tunisia" },
+  { value: "TRY", label: "TRY - Turkey" },
+  { value: "TMT", label: "TMT - Turkmenistan" },
+  { value: "UGX", label: "UGX - Uganda" },
+  { value: "UAH", label: "UAH - Ukraine" },
+  { value: "UYU", label: "UYU - Uruguay" },
+  { value: "UZS", label: "UZS - Uzbekistan" },
+  { value: "VUV", label: "VUV - Vanuatu" },
+  { value: "VES", label: "VES - Venezuela" },
+  { value: "VND", label: "VND - Vietnam" },
+  { value: "YER", label: "YER - Yemen" },
+  { value: "ZMW", label: "ZMW - Zambia" },
+  { value: "ZWG", label: "ZWG - Zimbabwe" }
 ];
 
 const JobPostForm = ({ onClose, onJobCreated }) => {
@@ -358,18 +486,29 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
                 placeholder="Enter amount"
                 className="flex-1 border border-gray-300 rounded-lg p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               />
-              <select
+              <Select
                 name="currency"
-                value={formData.currency}
-                onChange={handleChange}
-                className="border border-gray-300 rounded-lg p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
-              >
-                {currencies.map((curr) => (
-                  <option key={curr} value={curr}>
-                    {curr}
-                  </option>
-                ))}
-              </select>
+                value={currencyOptions.find(opt => opt.value === formData.currency)}
+                onChange={(selected) => setFormData({ ...formData, currency: selected?.value || "BDT" })}
+                options={currencyOptions}
+                isSearchable
+                placeholder="Currency"
+                className="w-32"
+                menuPlacement="bottom"
+                maxMenuHeight={200}
+                styles={{
+                  control: (base) => ({
+                    ...base,
+                    minHeight: '48px',
+                    borderColor: '#d1d5db',
+                    borderRadius: '0.5rem',
+                  }),
+                  menu: (base) => ({
+                    ...base,
+                    zIndex: 50,
+                  }),
+                }}
+              />
               <select
                 name="budgetType"
                 value={formData.budgetType}
