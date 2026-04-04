@@ -245,19 +245,22 @@ const TutorGigPage = () => {
 
           {/* Header */}
           <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-indigo-50 to-blue-50 flex justify-between items-center">
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
-              {editing ? (
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  className="border p-2 rounded w-full text-lg"
-                />
-              ) : (
-                gig.subject || gig.title || 'Untitled Gig'
-              )}
-            </h1>
+            <div>
+              <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
+                {editing ? (
+                  <input
+                    type="text"
+                    name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
+                    className="border p-2 rounded w-full text-lg"
+                  />
+                ) : (
+                  gig.title || 'Untitled Gig'
+                )}
+              </h1>
+              <p className="text-indigo-600 font-medium mt-1">{gig.subject}</p>
+            </div>
             <button
               onClick={() => setEditing(!editing)}
               className={`px-4 py-2 rounded text-white font-medium ${editing ? 'bg-gray-500 hover:bg-gray-600' : 'bg-indigo-600 hover:bg-indigo-700'}`}
