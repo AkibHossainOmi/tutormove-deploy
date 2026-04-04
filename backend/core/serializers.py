@@ -79,16 +79,10 @@ class GigSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     unlocked = serializers.SerializerMethodField()
     gigs = GigSerializer(many=True, read_only=True)
-    subjects = serializers.SerializerMethodField()
 
     class Meta:
         model = User
-        exclude = ['subjects']  # Exclude model field, use SerializerMethodField instead
-
-    def to_representation(self, instance):
-        ret = super().to_representation(instance)
-        ret['subjects'] = self.get_subjects(instance)
-        return ret
+        fields = '__all__'
 
     def get_unlocked(self, obj):
         request = self.context.get("request")
@@ -98,9 +92,11 @@ class UserSerializer(serializers.ModelSerializer):
         # For anonymous users, just return False
         return False
 
-    def get_subjects(self, obj):
-        # Extract unique subjects from tutor's gigs
-        return list(set(gig.subject for gig in obj.gigs.all() if gig.subject))
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        # Override subjects with gig subjects
+        ret['subjects'] = list(set(gig.subject for gig in instance.gigs.all() if gig.subject))
+        return ret
 
 # === AUTH & PASSWORD RESET SERIALIZERS ===
 
