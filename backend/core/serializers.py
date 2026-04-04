@@ -79,6 +79,7 @@ class GigSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     unlocked = serializers.SerializerMethodField()
     gigs = GigSerializer(many=True, read_only=True)
+    subjects = serializers.SerializerMethodField()
 
     class Meta:
         model = User
@@ -91,6 +92,10 @@ class UserSerializer(serializers.ModelSerializer):
             return ContactUnlock.objects.filter(unlocker=request.user, target=obj).exists()
         # For anonymous users, just return False
         return False
+
+    def get_subjects(self, obj):
+        # Extract unique subjects from tutor's gigs
+        return list(set(gig.subject for gig in obj.gigs.all() if gig.subject))
 
 # === AUTH & PASSWORD RESET SERIALIZERS ===
 
