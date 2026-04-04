@@ -718,7 +718,7 @@ class GigViewSet(viewsets.ModelViewSet):
             raise PermissionDenied("You can only view rank for your own gig.")
 
         # Sort gigs by used_credits and created_at
-        all_gigs = Gig.objects.filter(title=gig.title).order_by('-used_credits', '-created_at')
+        all_gigs = Gig.objects.filter(subject=gig.subject).order_by('-used_credits', '-created_at')
         gig_ids = list(all_gigs.values_list('id', flat=True))
 
         try:
@@ -730,7 +730,7 @@ class GigViewSet(viewsets.ModelViewSet):
             "rank": rank,
             "total": len(gig_ids),
             "gig_id": gig.id,
-            "subject": gig.title,
+            "subject": gig.subject,
         })
 
     @action(detail=True, methods=['get'])
@@ -749,7 +749,7 @@ class GigViewSet(viewsets.ModelViewSet):
 
         simulated_used_credits = gig.used_credits + credits_to_spend
 
-        all_gigs = list(Gig.objects.filter(title=gig.title))
+        all_gigs = list(Gig.objects.filter(subject=gig.subject))
 
         all_gigs_sorted = sorted(
             all_gigs,
@@ -765,7 +765,7 @@ class GigViewSet(viewsets.ModelViewSet):
             "predicted_rank": new_rank,
             "total": len(all_gigs_sorted),
             "gig_id": gig.id,
-            "subject": gig.title,
+            "subject": gig.subject,
             "simulated_used_credits": simulated_used_credits,
             "credits_spent": credits_to_spend,
         })# core/views.py
