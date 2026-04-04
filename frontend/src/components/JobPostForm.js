@@ -1,5 +1,6 @@
 import { useState } from "react";
 import Select from "react-select";
+import axios from "axios";
 import { jobAPI } from "../utils/apiService";
 
 const countries = [
@@ -210,6 +211,34 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
   const [showDistanceInput, setShowDistanceInput] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Location autocomplete states
+  const [locationQuery, setLocationQuery] = useState("");
+  const [locationSuggestions, setLocationSuggestions] = useState([]);
+  const [showLocationSuggestions, setShowLocationSuggestions] = useState(false);
+
+  const fetchLocationSuggestions = async (text) => {
+    if (text.length < 3) {
+      setLocationSuggestions([]);
+      return;
+    }
+    try {
+      const res = await axios.get("https://nominatim.openstreetmap.org/search", {
+        params: { q: text, format: "json", limit: 5 },
+      });
+      setLocationSuggestions(res.data);
+      setShowLocationSuggestions(true);
+    } catch {
+      setLocationSuggestions([]);
+    }
+  };
+
+  const handleLocationSelect = (suggestion) => {
+    setLocationQuery(suggestion.display_name);
+    setFormData({ ...formData, location: suggestion.display_name });
+    setLocationSuggestions([]);
+    setShowLocationSuggestions(false);
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -316,19 +345,40 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
           </h2>
 
           {/* Location */}
-          <div>
+          <div className="relative">
             <label className="block text-sm mb-1">
               <RequiredLabel label="Location" />
             </label>
             <input
               type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="Enter your location"
+              value={locationQuery}
+              onChange={(e) => {
+                setLocationQuery(e.target.value);
+                setFormData({ ...formData, location: "" }); // Clear selection when typing
+                fetchLocationSuggestions(e.target.value);
+              }}
+              onFocus={() => locationSuggestions.length > 0 && setShowLocationSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowLocationSuggestions(false), 200)}
+              placeholder="Type to search location..."
               className="w-full border border-gray-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 rounded-lg p-3 transition"
               required
             />
+            {showLocationSuggestions && locationSuggestions.length > 0 && (
+              <ul className="absolute top-full left-0 right-0 bg-white border border-gray-300 rounded-lg mt-1 max-h-52 overflow-y-auto z-50 shadow-lg">
+                {locationSuggestions.map((sugg) => (
+                  <li
+                    key={sugg.place_id}
+                    onMouseDown={() => handleLocationSelect(sugg)}
+                    className="px-4 py-3 text-sm hover:bg-indigo-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                  >
+                    {sugg.display_name}
+                  </li>
+                ))}
+              </ul>
+            )}
+            {locationQuery && !formData.location && (
+              <p className="text-xs text-amber-600 mt-1">Please select a location from the suggestions</p>
+            )}
           </div>
 
           {/* Phone */}
