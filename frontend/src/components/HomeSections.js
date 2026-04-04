@@ -1,8 +1,74 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const HomeSections = () => {
   return (
     <div className="font-sans text-gray-800 bg-gradient-to-b from-white via-gray-50 to-white">
+      {/* Teachers | Teaching Jobs Two-Column Section */}
+      <nav className="py-12 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
+        <div className="flex flex-col md:flex-row justify-center items-start gap-16 max-w-6xl mx-auto px-6">
+          {/* Teachers */}
+          <div className="text-center flex-1">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
+                Teachers
+              </h2>
+            </div>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { label: 'All Teachers', path: '/tutors' },
+                { label: 'Online Teachers', path: '/tutors?type=online' },
+                { label: 'Home Teachers', path: '/tutors?type=home' },
+              ].map((item, idx) => (
+                <Link
+                  key={idx}
+                  to={item.path}
+                  className="group relative px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border-2 border-gray-200 rounded-xl hover:border-indigo-500 hover:text-indigo-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 overflow-hidden"
+                >
+                  <span className="relative z-10">{item.label}</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-indigo-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          {/* Teaching Jobs */}
+          <div className="text-center flex-1">
+            <div className="inline-flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center shadow-lg">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
+                Teaching Jobs
+              </h2>
+            </div>
+            <div className="flex flex-wrap justify-center gap-3">
+              {[
+                { label: 'All Jobs', path: '/jobs' },
+                { label: 'Online Teaching', path: '/jobs?type=online' },
+                { label: 'Assignment Jobs', path: '/jobs?type=assignment' },
+              ].map((item, idx) => (
+                <Link
+                  key={idx}
+                  to={item.path}
+                  className="group relative px-5 py-2.5 text-sm font-medium text-gray-700 bg-white border-2 border-gray-200 rounded-xl hover:border-emerald-500 hover:text-emerald-600 transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 overflow-hidden"
+                >
+                  <span className="relative z-10">{item.label}</span>
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-50 to-teal-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </nav>
+
       {/* High Quality Teachers */}
       <section className="py-16 text-center relative overflow-hidden">
         {/* Decorative Background Elements */}
