@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { gigApi } from '../utils/apiService';
@@ -30,7 +30,7 @@ const TutorGigPage = () => {
     phone: ''
   });
 
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = useMemo(() => JSON.parse(localStorage.getItem('user')), []);
   const isOwner = user && gig && user.id === gig.tutor;
 
   const fetchRank = useCallback(async (gigId) => {
