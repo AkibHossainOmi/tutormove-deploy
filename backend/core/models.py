@@ -290,6 +290,7 @@ class Job(models.Model):
 
     budget = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     budget_type = models.CharField(max_length=20, choices=BUDGET_TYPE_CHOICES, blank=True, default='Fixed')
+    currency = models.CharField(max_length=10, default='BDT', blank=True)
     total_hours = models.PositiveIntegerField(null=True, blank=True, help_text="Total hours for the job") 
 
     gender_preference = models.CharField(

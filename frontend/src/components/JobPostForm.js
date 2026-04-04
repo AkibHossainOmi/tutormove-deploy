@@ -40,6 +40,24 @@ const top100Languages = [
 const educationLevels = ["Primary", "Secondary", "Higher Secondary", "Bachelor", "Masters", "PhD"];
 const budgetTypes = ["Fixed", "Per Hour", "Per Month", "Per Week", "Per Year"];
 
+const currencies = [
+  "AFN", "ALL", "DZD", "EUR", "AOA", "XCD", "ARS", "AMD", "AUD", "AZN",
+  "BSD", "BHD", "BDT", "BBD", "BYN", "BZD", "XOF", "BTN", "BOB", "BAM",
+  "BWP", "BRL", "BND", "BGN", "BIF", "CVE", "KHR", "XAF", "CAD", "CLP",
+  "CNY", "COP", "KMF", "CDF", "CRC", "CUP", "CZK", "DKK", "DJF", "DOP",
+  "USD", "EGP", "ERN", "SZL", "ETB", "FJD", "GMD", "GEL", "GHS", "GTQ",
+  "GNF", "GYD", "HTG", "HNL", "HUF", "ISK", "INR", "IDR", "IRR", "IQD",
+  "ILS", "JMD", "JPY", "JOD", "KZT", "KES", "KWD", "KGS", "LAK", "LBP",
+  "LSL", "LRD", "LYD", "CHF", "MGA", "MWK", "MYR", "MVR", "MRU", "MUR",
+  "MXN", "MDL", "MNT", "MAD", "MZN", "MMK", "NAD", "NPR", "NZD", "NIO",
+  "NGN", "KPW", "MKD", "NOK", "OMR", "PKR", "PAB", "PGK", "PYG", "PEN",
+  "PHP", "PLN", "QAR", "RON", "RUB", "RWF", "WST", "STN", "SAR", "RSD",
+  "SCR", "SLE", "SGD", "SBD", "SOS", "ZAR", "SSP", "LKR", "SDG", "SRD",
+  "SEK", "SYP", "TJS", "TZS", "THB", "TOP", "TTD", "TND", "TRY", "TMT",
+  "UGX", "UAH", "AED", "GBP", "UYU", "UZS", "VUV", "VES", "VND", "YER",
+  "ZMW", "ZWG"
+];
+
 const JobPostForm = ({ onClose, onJobCreated }) => {
   const [formData, setFormData] = useState({
     location: "",
@@ -52,6 +70,7 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
     distance: null,
     budget: "",
     budgetType: "",
+    currency: "BDT",
     totalHours: "",
     genderPreference: "",
     languages: [],
@@ -113,6 +132,7 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
         distance: formData.distance || null,
         budget: formData.budget || null,
         budget_type: formData.budgetType || "Fixed",
+        currency: formData.currency || "BDT",
         total_hours: formData.totalHours || null,
         gender_preference: formData.genderPreference || "Any",
         country: formData.country || "Unknown",
@@ -338,6 +358,18 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
                 placeholder="Enter amount"
                 className="flex-1 border border-gray-300 rounded-lg p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
               />
+              <select
+                name="currency"
+                value={formData.currency}
+                onChange={handleChange}
+                className="border border-gray-300 rounded-lg p-3 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200"
+              >
+                {currencies.map((curr) => (
+                  <option key={curr} value={curr}>
+                    {curr}
+                  </option>
+                ))}
+              </select>
               <select
                 name="budgetType"
                 value={formData.budgetType}
