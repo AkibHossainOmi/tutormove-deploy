@@ -286,7 +286,7 @@ const TutorGigPage = () => {
 
           {/* Details */}
           <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-            {['phone', 'education', 'experience', 'fee_details', 'subject'].map(field => (
+            {['phone', 'education', 'experience', 'fee_details'].map(field => (
               <div key={field}>
                 <h3 className="text-sm font-medium text-gray-500 mb-1">{field.replace('_', ' ').toUpperCase()}</h3>
                 {editing ? (
@@ -302,6 +302,11 @@ const TutorGigPage = () => {
                 )}
               </div>
             ))}
+            {/* Subject - always read-only */}
+            <div>
+              <h3 className="text-sm font-medium text-gray-500 mb-1">SUBJECT</h3>
+              <p className="text-gray-900">{gig.subject || 'N/A'}</p>
+            </div>
           </div>
 
           {editing && (
