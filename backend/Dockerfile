@@ -28,5 +28,5 @@ RUN python manage.py collectstatic --noinput
 # Expose port Django will run on
 EXPOSE 8000
 
-# Start Django with Uvicorn (ASGI)
-CMD ["uvicorn", "backend.asgi:application", "--host", "0.0.0.0", "--port", "8000", "--workers", "4"]
+# Start Django with Uvicorn (ASGI) - run migrations first
+CMD ["sh", "-c", "python manage.py migrate --noinput && uvicorn backend.asgi:application --host 0.0.0.0 --port 8000 --workers 4"]
