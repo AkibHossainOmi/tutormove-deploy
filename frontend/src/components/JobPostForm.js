@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Select from "react-select";
 import axios from "axios";
 import { jobAPI } from "../utils/apiService";
+import { savePendingRequirement } from "../utils/pendingRequirement";
 
 const countries = [
   "Afghanistan", "Albania", "Algeria", "Andorra", "Angola", "Argentina", "Armenia", "Australia", "Austria", "Azerbaijan",
@@ -187,7 +189,14 @@ const currencyOptions = [
   { value: "ZWG", label: "ZWG - Zimbabwe" }
 ];
 
-const JobPostForm = ({ onClose, onJobCreated }) => {
+const JobPostForm = ({
+  onClose,
+  onJobCreated,
+  variant = "modal",  // "modal" | "page"
+  submitLabel = "Post Job",
+  unauthenticatedSubmitMode = null  // null | "redirect-to-signup"
+}) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     location: "",
     phone: "",
@@ -311,35 +320,47 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    const storedUser = localStorage.getItem("user");
+    const studentId = storedUser ? JSON.parse(storedUser)?.user_id : null;
+    const isAuthenticated = !!studentId;
+
+    const payload = {
+      location: formData.location,
+      phone: formData.phone,
+      email: formData.email,
+      description: formData.description,
+      subjects: formData.subjects,
+      languages: formData.languages,
+      mode: formData.mode,
+      education_level: formData.educationLevel || "Primary",
+      service_type: formData.serviceType || "Tutoring",
+      distance: formData.distance || null,
+      budget: formData.budget || null,
+      budget_type: formData.budgetType || "Fixed",
+      currency: formData.currency || "BDT",
+      total_hours: formData.totalHours || null,
+      gender_preference: formData.genderPreference || "Any",
+      country: formData.country || "Unknown",
+    };
+
+    // If user is not authenticated and mode is redirect-to-signup
+    if (!isAuthenticated && unauthenticatedSubmitMode === "redirect-to-signup") {
+      savePendingRequirement(payload);
+      setIsSubmitting(false);
+      navigate("/signup");
+      return;
+    }
+
     try {
-      const storedUser = localStorage.getItem("user");
-      const studentId = storedUser ? JSON.parse(storedUser)?.user_id : null;
-
-      const payload = {
-        student: studentId,
-        location: formData.location,
-        phone: formData.phone,
-        email: formData.email,
-        description: formData.description,
-        subjects: formData.subjects, // M2M
-        languages: formData.languages,
-        mode: formData.mode,
-        education_level: formData.educationLevel || "Primary",
-        service_type: formData.serviceType || "Tutoring",
-        distance: formData.distance || null,
-        budget: formData.budget || null,
-        budget_type: formData.budgetType || "Fixed",
-        currency: formData.currency || "BDT",
-        total_hours: formData.totalHours || null,
-        gender_preference: formData.genderPreference || "Any",
-        country: formData.country || "Unknown",
-      };
-
+      payload.student = studentId;
       const response = await jobAPI.createJob(payload);
 
       if (response?.status === 201 || response?.id) {
         onJobCreated && onJobCreated(response);
-        setTimeout(() => onClose(), 1500);
+        if (onClose) {
+          setTimeout(() => onClose(), 1500);
+        }
       }
     } catch (error) {
       console.error("Error posting job:", error);
@@ -367,22 +388,13 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
     </span>
   );
 
-  return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto relative">
-        {/* Close Button */}
-        <button
-          type="button"
-          onClick={onClose}
-          className="absolute top-3 right-4 text-3xl text-gray-500 hover:text-red-600 transition"
-        >
-          &times;
-        </button>
-
-        <form onSubmit={handleSubmit} className="p-8 space-y-6">
-          <h2 className="text-2xl font-bold text-gray-800 border-b pb-3">
-            Get a Tutor For You
-          </h2>
+  const formContent = (
+    <form onSubmit={handleSubmit} className="p-8 space-y-6">
+      {variant === "modal" && (
+        <h2 className="text-2xl font-bold text-gray-800 border-b pb-3">
+          Get a Tutor For You
+        </h2>
+      )}
 
           {/* Location */}
           <div className="relative">
@@ -731,17 +743,41 @@ const JobPostForm = ({ onClose, onJobCreated }) => {
             </select>
           </div>
 
-          {/* Submit */}
-          <div className="flex justify-end">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold shadow-md hover:from-indigo-700 hover:to-purple-700 transition disabled:opacity-60"
-            >
-              {isSubmitting ? "Posting..." : "Post Job"}
-            </button>
-          </div>
-        </form>
+      {/* Submit */}
+      <div className="flex justify-end">
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-3 rounded-xl font-semibold shadow-md hover:from-indigo-700 hover:to-purple-700 transition disabled:opacity-60"
+        >
+          {isSubmitting ? "Submitting..." : submitLabel}
+        </button>
+      </div>
+    </form>
+  );
+
+  // Render based on variant
+  if (variant === "page") {
+    return (
+      <div className="bg-white w-full max-w-3xl mx-auto rounded-2xl shadow-lg">
+        {formContent}
+      </div>
+    );
+  }
+
+  // Default: modal variant
+  return (
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white w-full max-w-3xl rounded-2xl shadow-2xl max-h-[85vh] overflow-y-auto relative">
+        {/* Close Button */}
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute top-3 right-4 text-3xl text-gray-500 hover:text-red-600 transition"
+        >
+          &times;
+        </button>
+        {formContent}
       </div>
     </div>
   );

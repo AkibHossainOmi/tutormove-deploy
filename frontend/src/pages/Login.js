@@ -3,7 +3,8 @@ import { useNavigate, Link, Navigate } from "react-router-dom";
 import { useAuth } from "../contexts/UseAuth";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
-import { authAPI, userApi } from "../utils/apiService"; // Backend API service
+import { authAPI, userApi, jobAPI } from "../utils/apiService";
+import { getPendingRequirement, clearPendingRequirement } from "../utils/pendingRequirement";
 
 const FIELD_BASE =
   "w-full rounded-xl border border-gray-200 bg-white/60 backdrop-blur px-4 py-3 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:ring-4 focus:ring-indigo-100 focus:border-indigo-500";
@@ -49,6 +50,23 @@ const Login = () => {
       const user = await userApi.getUser();
       user.data.user_id = user.data.id;
       localStorage.setItem("user", JSON.stringify(user.data));
+
+      // Check for pending job requirement from guest submission
+      const pendingJob = getPendingRequirement();
+      if (pendingJob) {
+        try {
+          // Add student ID to the payload
+          pendingJob.student = user.data.id;
+          await jobAPI.createJob(pendingJob);
+          clearPendingRequirement();
+          // Set flag for success modal in dashboard
+          localStorage.setItem("jobPostSuccess", "true");
+        } catch (err) {
+          console.error("Failed to auto-submit pending job:", err);
+          // Clear anyway to prevent repeated failures
+          clearPendingRequirement();
+        }
+      }
 
       navigate("/dashboard");
     } catch (err) {

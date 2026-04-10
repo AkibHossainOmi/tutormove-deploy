@@ -447,10 +447,20 @@ const StudentDashboard = () => {
   // Easter Egg State
   const [showEasterEgg, setShowEasterEgg] = useState(false);
 
+  // Job Post Success Modal (for auto-submitted requirements after signup/login)
+  const [showJobPostSuccessModal, setShowJobPostSuccessModal] = useState(false);
+
   useEffect(() => {
     const storedUser = JSON.parse(localStorage.getItem('user'));
     if (storedUser?.user_type === 'student') setUser(storedUser);
     else setIsLoading(false);
+
+    // Check for job post success flag (set by Login.js after auto-submit)
+    const jobPostSuccess = localStorage.getItem('jobPostSuccess');
+    if (jobPostSuccess) {
+      localStorage.removeItem('jobPostSuccess');
+      setShowJobPostSuccessModal(true);
+    }
   }, []);
 
   // Easter Egg Keyboard Listener
@@ -650,10 +660,38 @@ const StudentDashboard = () => {
         onClose={() => setShowInsufficientCreditsModal(false)}
         onBuyCredits={handleNavigateToBuyCredits}
       />
-      <EasterEggOverlay 
-        isVisible={showEasterEgg} 
-        onClose={() => setShowEasterEgg(false)} 
+      <EasterEggOverlay
+        isVisible={showEasterEgg}
+        onClose={() => setShowEasterEgg(false)}
       />
+
+      {/* Job Post Success Modal */}
+      {showJobPostSuccessModal && (
+        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white rounded-2xl shadow-xl p-6 animate-in fade-in zoom-in duration-200">
+            <div className="text-center">
+              <div className="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-4">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+              <h3 className="text-xl font-semibold text-gray-900 mb-2">Requirement Posted!</h3>
+              <p className="text-gray-600">
+                Your learning requirement has been posted successfully. Tutors matching your criteria will be notified.
+              </p>
+            </div>
+            <div className="mt-6 flex justify-center">
+              <button
+                onClick={() => setShowJobPostSuccessModal(false)}
+                className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-6 py-2.5 rounded-xl font-medium hover:from-blue-700 hover:to-blue-800 transition"
+              >
+                Got it!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="w-screen relative left-1/2 right-1/2 -mx-[50.4vw] h-20">
         <Footer />
       </div>
